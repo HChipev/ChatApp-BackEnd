@@ -146,14 +146,13 @@ namespace Service.Implementations
                     { IsSuccess = false, Message = result.Message, Data = null };
         }
 
-        public async Task<ServiceResult<TokensResponseViewModel>> RefreshTokenAsync(TokenViewModel tokens)
+        public async Task<ServiceResult<TokensResponseViewModel>> RefreshTokenAsync(TokenViewModel token)
         {
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                SecurityToken securityToken;
 
-                var principal = tokenHandler.ValidateToken(tokens.Token, new TokenValidationParameters
+                var principal = tokenHandler.ValidateToken(token.Token, new TokenValidationParameters
                 {
                     IssuerSigningKey = new SymmetricSecurityKey
                     (Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET") ??
@@ -164,7 +163,7 @@ namespace Service.Implementations
                     ValidAudience = _configuration["Jwt:Audience"],
                     ValidateLifetime = false,
                     ValidateIssuerSigningKey = true
-                }, out securityToken);
+                }, out var securityToken);
                 var validatedToken = securityToken as JwtSecurityToken;
 
                 if (validatedToken?.Header.Alg != SecurityAlgorithms.HmacSha256)
@@ -176,9 +175,9 @@ namespace Service.Implementations
                 var nameIdentifier = int.Parse(principal.FindFirst(ClaimTypes.NameIdentifier).Value);
 
                 var user = _userRepository.FindByCondition(u =>
-                    u.Id == nameIdentifier && u.RefreshToken == Uri.UnescapeDataString(tokens.RefreshToken));
+                    u.Id == nameIdentifier);
 
-                if (user is null || user?.RefreshTokenExpiryTime < DateTime.UtcNow)
+                if (user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
                 {
                     return new ServiceResult<TokensResponseViewModel>
                         { IsSuccess = false, Message = "Invalid token", Data = null };

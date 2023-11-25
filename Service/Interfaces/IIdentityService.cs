@@ -11,7 +11,7 @@ namespace Service.Interfaces
 
         public Task<ServiceResult<bool>> LogoutAsync();
 
-        public Task<ServiceResult<TokensResponseViewModel>> RefreshTokenAsync(TokenViewModel tokens);
+        public Task<ServiceResult<TokensResponseViewModel>> RefreshTokenAsync(TokenViewModel token);
 
         public Task<ServiceResult<TokensResponseViewModel>> GoogleLoginAsync(GoogleLoginViewModel googleUser);
     }

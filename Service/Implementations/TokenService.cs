@@ -24,8 +24,8 @@ namespace Service.Implementations
         public TokenViewModel GenerateAccessToken(string email, int id, IEnumerable<string> roleNames,
             string picture, bool isLogin = false)
         {
-            int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out var tokenValidityInMinutes);
-            var expiration = DateTime.UtcNow.AddDays(tokenValidityInMinutes);
+            int.TryParse(_configuration["JWT:TokenValidityInDays"], out var tokenValidityInDays);
+            var expiration = DateTime.UtcNow.AddDays(tokenValidityInDays);
 
             var accessToken = CreateJwtToken(
                 CreateClaims(email, id, roleNames, picture),
@@ -46,7 +46,8 @@ namespace Service.Implementations
 
             var dbUser = _repository.Find(id);
 
-            if (dbUser.RefreshTokenExpiryTime < DateTime.UtcNow || dbUser.RefreshToken is null || isLogin)
+            if (dbUser is not null && (dbUser.RefreshTokenExpiryTime < DateTime.UtcNow || dbUser.RefreshToken is null ||
+                                       isLogin))
             {
                 dbUser.RefreshToken = refreshTokenString;
                 dbUser.RefreshTokenExpiryTime = refreshTokenExpiration;
@@ -57,8 +58,7 @@ namespace Service.Implementations
 
             return new TokenViewModel
             {
-                Token = accessTokenString,
-                RefreshToken = refreshTokenString
+                Token = accessTokenString
             };
         }
 

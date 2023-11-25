@@ -42,11 +42,17 @@ namespace Back_End.Controllers
             return BadRequest(result.Message);
         }
 
-        [HttpPost("refresh-token")]
+        [HttpGet("refresh-token")]
         [AllowAnonymous]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenViewModel tokensModel)
+        public async Task<IActionResult> RefreshToken([FromHeader(Name = "Authorization")] string authorizationHeader)
         {
-            var result = await _identityService.RefreshTokenAsync(tokensModel);
+            var tokenViewModel = new TokenViewModel
+            {
+                Token = authorizationHeader.Replace("Bearer ", string.Empty)
+            };
+
+
+            var result = await _identityService.RefreshTokenAsync(tokenViewModel);
             if (result.IsSuccess)
             {
                 return Ok(result.Data);
