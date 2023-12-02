@@ -22,13 +22,13 @@ namespace Service.Implementations
         }
 
         public TokenViewModel GenerateAccessToken(string email, int id, IEnumerable<string> roleNames,
-            string picture, bool isLogin = false)
+            string picture, string name, bool isLogin = false)
         {
             int.TryParse(_configuration["JWT:TokenValidityInDays"], out var tokenValidityInDays);
             var expiration = DateTime.UtcNow.AddDays(tokenValidityInDays);
 
             var accessToken = CreateJwtToken(
-                CreateClaims(email, id, roleNames, picture),
+                CreateClaims(email, id, roleNames, picture, name),
                 CreateSigningCredentials(),
                 expiration
             );
@@ -83,19 +83,16 @@ namespace Service.Implementations
             );
         }
 
-        private Claim[] CreateClaims(string email, int id, IEnumerable<string> roleNames, string picture)
+        private Claim[] CreateClaims(string email, int id, IEnumerable<string> roleNames, string picture, string name)
         {
             var claims = new List<Claim>
             {
+                new(ClaimTypes.Name, name),
                 new(ClaimTypes.Email, email),
                 new(ClaimTypes.NameIdentifier, id.ToString()),
                 new("picture", picture)
             };
-
-            foreach (var roleName in roleNames)
-            {
-                claims.Add(new Claim(ClaimTypes.Role, roleName));
-            }
+            claims.AddRange(roleNames.Select(roleName => new Claim(ClaimTypes.Role, roleName)));
 
             return claims.ToArray();
         }

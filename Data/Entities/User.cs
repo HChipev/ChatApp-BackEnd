@@ -9,5 +9,7 @@ namespace Data.Entities
         public DateTime? RefreshTokenExpiryTime { get; set; }
 
         public string Picture { get; set; } = "https://i.stack.imgur.com/l60Hf.png";
+
+        public string Name { get; set; }
     }
 }

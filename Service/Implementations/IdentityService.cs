@@ -76,7 +76,7 @@ namespace Service.Implementations
                     Data = new TokensResponseViewModel
                     {
                         Tokens = _tokenService.GenerateAccessToken(dbUser.Email, dbUser.Id,
-                            await GetUserRolesNames(dbUser.Id), dbUser.Picture, true)
+                            await GetUserRolesNames(dbUser.Id), dbUser.Picture, dbUser.Name, true)
                     }
                 };
             }
@@ -128,7 +128,7 @@ namespace Service.Implementations
                     Data = new TokensResponseViewModel
                     {
                         Tokens = _tokenService.GenerateAccessToken(dbUser.Email, dbUser.Id,
-                            await GetUserRolesNames(dbUser.Id), dbUser.Picture, true)
+                            await GetUserRolesNames(dbUser.Id), dbUser.Picture, dbUser.Name, true)
                     }
                 };
             }
@@ -185,7 +185,7 @@ namespace Service.Implementations
 
                 var newTokens =
                     _tokenService.GenerateAccessToken(user.Email, user.Id, await GetUserRolesNames(user.Id),
-                        user.Picture);
+                        user.Picture, user.Name);
                 return new ServiceResult<TokensResponseViewModel>
                     { IsSuccess = true, Message = "", Data = new TokensResponseViewModel { Tokens = newTokens } };
             }

@@ -94,6 +94,10 @@ namespace Data.Migrations
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
 
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -152,11 +156,12 @@ namespace Data.Migrations
                             Email = "icko15.8@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = true,
+                            Name = "Hristo Chipev",
                             NormalizedEmail = "ICKO15.8@GMAIL.COM",
                             NormalizedUserName = "ICKO15.8@GMAIL.COM",
                             PasswordHash = "AQAAAAIAAYagAAAAENiNPb3FcFuhzPcO8DoEvBPAgJpINHNVLQX/UlIhdcpqdZWICDasSvDpEVMu1g/W4g==",
                             PhoneNumberConfirmed = true,
-                            Picture = "https://i.stack.imgur.com/l60Hf.png",
+                            Picture = "https://lh3.googleusercontent.com/a/AEdFTp6Loqk8Bp9AUCmqWty1RpK0OThyeMc1MtBPF02FoQ=s96-c",
                             SecurityStamp = "f5bd309e-5ebc-40dd-b0fc-655cfea70a70",
                             TwoFactorEnabled = false,
                             UserName = "icko15.8@gmail.com"
@@ -182,6 +187,11 @@ namespace Data.Migrations
                         {
                             UserId = 1,
                             RoleId = 1
+                        },
+                        new
+                        {
+                            UserId = 1,
+                            RoleId = 2
                         });
                 });
 

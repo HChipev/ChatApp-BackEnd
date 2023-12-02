@@ -23,6 +23,9 @@ namespace Data.ModelBuilding
                     NormalizedUserName = "ICKO15.8@GMAIL.COM",
                     Email = "icko15.8@gmail.com",
                     NormalizedEmail = "ICKO15.8@GMAIL.COM",
+                    Name = "Hristo Chipev",
+                    Picture =
+                        "https://lh3.googleusercontent.com/a/AEdFTp6Loqk8Bp9AUCmqWty1RpK0OThyeMc1MtBPF02FoQ=s96-c",
                     PasswordHash =
                         "AQAAAAIAAYagAAAAENiNPb3FcFuhzPcO8DoEvBPAgJpINHNVLQX/UlIhdcpqdZWICDasSvDpEVMu1g/W4g==",
                     EmailConfirmed = true,
@@ -67,6 +70,11 @@ namespace Data.ModelBuilding
                 {
                     UserId = 1,
                     RoleId = 1
+                },
+                new()
+                {
+                    UserId = 1,
+                    RoleId = 2
                 }
             };
 
