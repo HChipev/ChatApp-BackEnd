@@ -19,6 +19,8 @@ namespace Data.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Name = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true)
@@ -38,6 +40,8 @@ namespace Data.Migrations
                     RefreshTokenExpiryTime = table.Column<DateTime>(type: "datetime2", nullable: true),
                     Picture = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -125,7 +129,9 @@ namespace Data.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
-                    RoleId = table.Column<int>(type: "int", nullable: false)
+                    RoleId = table.Column<int>(type: "int", nullable: false),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ModifiedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -166,25 +172,25 @@ namespace Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "AspNetRoles",
-                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                columns: new[] { "Id", "ConcurrencyStamp", "CreatedAt", "ModifiedAt", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, null, "Admin", "ADMIN" },
-                    { 2, null, "User", "USER" }
+                    { 1, null, new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1790), null, "Admin", "ADMIN" },
+                    { 2, null, new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1790), null, "User", "USER" }
                 });
 
             migrationBuilder.InsertData(
                 table: "AspNetUsers",
-                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Picture", "RefreshToken", "RefreshTokenExpiryTime", "SecurityStamp", "TwoFactorEnabled", "UserName" },
-                values: new object[] { 1, 0, "4ea1a2fc-a47c-44fe-b404-a70225b2b390", "icko15.8@gmail.com", true, true, null, "Hristo Chipev", "ICKO15.8@GMAIL.COM", "ICKO15.8@GMAIL.COM", "AQAAAAIAAYagAAAAENiNPb3FcFuhzPcO8DoEvBPAgJpINHNVLQX/UlIhdcpqdZWICDasSvDpEVMu1g/W4g==", null, true, "https://lh3.googleusercontent.com/a/AEdFTp6Loqk8Bp9AUCmqWty1RpK0OThyeMc1MtBPF02FoQ=s96-c", null, null, "f5bd309e-5ebc-40dd-b0fc-655cfea70a70", false, "icko15.8@gmail.com" });
+                columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "CreatedAt", "Email", "EmailConfirmed", "LockoutEnabled", "LockoutEnd", "ModifiedAt", "Name", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "PhoneNumber", "PhoneNumberConfirmed", "Picture", "RefreshToken", "RefreshTokenExpiryTime", "SecurityStamp", "TwoFactorEnabled", "UserName" },
+                values: new object[] { 1, 0, "4ea1a2fc-a47c-44fe-b404-a70225b2b390", new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1690), "icko15.8@gmail.com", true, true, null, null, "Hristo Chipev", "ICKO15.8@GMAIL.COM", "ICKO15.8@GMAIL.COM", "AQAAAAIAAYagAAAAENiNPb3FcFuhzPcO8DoEvBPAgJpINHNVLQX/UlIhdcpqdZWICDasSvDpEVMu1g/W4g==", null, true, "https://lh3.googleusercontent.com/a/AEdFTp6Loqk8Bp9AUCmqWty1RpK0OThyeMc1MtBPF02FoQ=s96-c", null, null, "f5bd309e-5ebc-40dd-b0fc-655cfea70a70", false, "icko15.8@gmail.com" });
 
             migrationBuilder.InsertData(
                 table: "AspNetUserRoles",
-                columns: new[] { "RoleId", "UserId" },
+                columns: new[] { "RoleId", "UserId", "CreatedAt", "ModifiedAt" },
                 values: new object[,]
                 {
-                    { 1, 1 },
-                    { 2, 1 }
+                    { 1, 1, new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1800), null },
+                    { 2, 1, new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1810), null }
                 });
 
             migrationBuilder.CreateIndex(

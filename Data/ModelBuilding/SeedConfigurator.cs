@@ -34,7 +34,8 @@ namespace Data.ModelBuilding
                     LockoutEnabled = true,
                     AccessFailedCount = 0,
                     SecurityStamp = "f5bd309e-5ebc-40dd-b0fc-655cfea70a70",
-                    ConcurrencyStamp = "4ea1a2fc-a47c-44fe-b404-a70225b2b390"
+                    ConcurrencyStamp = "4ea1a2fc-a47c-44fe-b404-a70225b2b390",
+                    CreatedAt = DateTime.UtcNow
                 }
             };
 
@@ -49,13 +50,15 @@ namespace Data.ModelBuilding
                 {
                     Id = 1,
                     Name = "Admin",
-                    NormalizedName = "ADMIN"
+                    NormalizedName = "ADMIN",
+                    CreatedAt = DateTime.UtcNow
                 },
                 new()
                 {
                     Id = 2,
                     Name = "User",
-                    NormalizedName = "USER"
+                    NormalizedName = "USER",
+                    CreatedAt = DateTime.UtcNow
                 }
             };
 
@@ -69,12 +72,14 @@ namespace Data.ModelBuilding
                 new()
                 {
                     UserId = 1,
-                    RoleId = 1
+                    RoleId = 1,
+                    CreatedAt = DateTime.UtcNow
                 },
                 new()
                 {
                     UserId = 1,
-                    RoleId = 2
+                    RoleId = 2,
+                    CreatedAt = DateTime.UtcNow
                 }
             };
 

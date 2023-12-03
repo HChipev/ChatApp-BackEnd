@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20231202124642_AddInitialCreate")]
-    partial class AddInitialCreate
+    [Migration("20231203134734_AddConversations")]
+    partial class AddConversations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,6 +24,68 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
+
+            modelBuilder.Entity("Data.Entities.Conversation", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Conversations", (string)null);
+                });
+
+            modelBuilder.Entity("Data.Entities.ConversationEntry", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("ConversationId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsFromUser")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ConversationId");
+
+                    b.ToTable("ConversationEntries", (string)null);
+                });
 
             modelBuilder.Entity("Data.Entities.Role", b =>
                 {
@@ -36,6 +98,12 @@ namespace Data.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .HasMaxLength(256)
@@ -58,12 +126,14 @@ namespace Data.Migrations
                         new
                         {
                             Id = 1,
+                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
+                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840),
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -84,6 +154,9 @@ namespace Data.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
@@ -96,6 +169,9 @@ namespace Data.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -156,6 +232,7 @@ namespace Data.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "4ea1a2fc-a47c-44fe-b404-a70225b2b390",
+                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9820),
                             Email = "icko15.8@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = true,
@@ -179,6 +256,12 @@ namespace Data.Migrations
                     b.Property<int>("RoleId")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ModifiedAt")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
@@ -189,12 +272,14 @@ namespace Data.Migrations
                         new
                         {
                             UserId = 1,
-                            RoleId = 1
+                            RoleId = 1,
+                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9860)
                         },
                         new
                         {
                             UserId = 1,
-                            RoleId = 2
+                            RoleId = 2,
+                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9860)
                         });
                 });
 
@@ -286,6 +371,28 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("Data.Entities.Conversation", b =>
+                {
+                    b.HasOne("Data.Entities.User", "User")
+                        .WithMany("Conversations")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Data.Entities.ConversationEntry", b =>
+                {
+                    b.HasOne("Data.Entities.Conversation", "Conversation")
+                        .WithMany("Entries")
+                        .HasForeignKey("ConversationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Conversation");
+                });
+
             modelBuilder.Entity("Data.Entities.UserRole", b =>
                 {
                     b.HasOne("Data.Entities.Role", null)
@@ -335,6 +442,16 @@ namespace Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Data.Entities.Conversation", b =>
+                {
+                    b.Navigation("Entries");
+                });
+
+            modelBuilder.Entity("Data.Entities.User", b =>
+                {
+                    b.Navigation("Conversations");
                 });
 #pragma warning restore 612, 618
         }

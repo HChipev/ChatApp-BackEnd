@@ -50,43 +50,6 @@ namespace Service.Implementations
             _environment = environment;
         }
 
-        public async Task<ServiceResult<TokensResponseViewModel>> LoginAsync(UserLoginViewModel user)
-        {
-            try
-            {
-                var dbUser = await _userManager.FindByEmailAsync(user.Email);
-
-                if (dbUser is null)
-                {
-                    return new ServiceResult<TokensResponseViewModel>
-                        { IsSuccess = false, Message = "Invalid email or password", Data = null };
-                }
-
-                var result = await _signInManager.PasswordSignInAsync(user.Email, user.Password, false, false);
-
-                if (!result.Succeeded)
-                {
-                    return new ServiceResult<TokensResponseViewModel>
-                        { IsSuccess = false, Message = "Invalid email or password", Data = null };
-                }
-
-                return new ServiceResult<TokensResponseViewModel>
-                {
-                    IsSuccess = true, Message = "",
-                    Data = new TokensResponseViewModel
-                    {
-                        Tokens = _tokenService.GenerateAccessToken(dbUser.Email, dbUser.Id,
-                            await GetUserRolesNames(dbUser.Id), dbUser.Picture, dbUser.Name, true)
-                    }
-                };
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResult<TokensResponseViewModel>
-                    { IsSuccess = false, Message = ex.Message, Data = null };
-            }
-        }
-
         public async Task<ServiceResult<bool>> LogoutAsync()
         {
             try
@@ -188,6 +151,43 @@ namespace Service.Implementations
                         user.Picture, user.Name);
                 return new ServiceResult<TokensResponseViewModel>
                     { IsSuccess = true, Message = "", Data = new TokensResponseViewModel { Tokens = newTokens } };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult<TokensResponseViewModel>
+                    { IsSuccess = false, Message = ex.Message, Data = null };
+            }
+        }
+
+        private async Task<ServiceResult<TokensResponseViewModel>> LoginAsync(UserLoginViewModel user)
+        {
+            try
+            {
+                var dbUser = await _userManager.FindByEmailAsync(user.Email);
+
+                if (dbUser is null)
+                {
+                    return new ServiceResult<TokensResponseViewModel>
+                        { IsSuccess = false, Message = "Invalid email or password", Data = null };
+                }
+
+                var result = await _signInManager.PasswordSignInAsync(user.Email, user.Password, false, false);
+
+                if (!result.Succeeded)
+                {
+                    return new ServiceResult<TokensResponseViewModel>
+                        { IsSuccess = false, Message = "Invalid email or password", Data = null };
+                }
+
+                return new ServiceResult<TokensResponseViewModel>
+                {
+                    IsSuccess = true, Message = "",
+                    Data = new TokensResponseViewModel
+                    {
+                        Tokens = _tokenService.GenerateAccessToken(dbUser.Email, dbUser.Id,
+                            await GetUserRolesNames(dbUser.Id), dbUser.Picture, dbUser.Name, true)
+                    }
+                };
             }
             catch (Exception ex)
             {

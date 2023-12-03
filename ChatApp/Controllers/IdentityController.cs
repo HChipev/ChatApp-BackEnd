@@ -17,20 +17,7 @@ namespace Back_End.Controllers
             _identityService = identityService;
         }
 
-        [HttpPost("login")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Login([FromBody] UserLoginViewModel userModel)
-        {
-            var result = await _identityService.LoginAsync(userModel);
-            if (result.IsSuccess)
-            {
-                return Ok(result.Data);
-            }
-
-            return BadRequest(result.Message);
-        }
-
-        [HttpPost("logout")]
+        [HttpGet("logout")]
         public async Task<IActionResult> Logout()
         {
             var result = await _identityService.LogoutAsync();

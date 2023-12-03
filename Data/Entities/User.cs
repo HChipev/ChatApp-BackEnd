@@ -11,5 +11,10 @@ namespace Data.Entities
         public string Picture { get; set; } = "https://i.stack.imgur.com/l60Hf.png";
 
         public string Name { get; set; }
+
+        public ICollection<Conversation> Conversations { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+        public DateTime? ModifiedAt { get; set; }
     }
 }

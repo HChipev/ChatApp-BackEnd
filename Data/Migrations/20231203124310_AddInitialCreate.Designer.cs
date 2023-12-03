@@ -4,6 +4,7 @@ using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Data.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20231203124310_AddInitialCreate")]
+    partial class AddInitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,68 +24,6 @@ namespace Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Data.Entities.Conversation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Conversations", (string)null);
-                });
-
-            modelBuilder.Entity("Data.Entities.ConversationEntry", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("ConversationId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsFromUser")
-                        .HasColumnType("bit");
-
-                    b.Property<DateTime?>("ModifiedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Text")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ConversationId");
-
-                    b.ToTable("ConversationEntries", (string)null);
-                });
 
             modelBuilder.Entity("Data.Entities.Role", b =>
                 {
@@ -123,14 +64,14 @@ namespace Data.Migrations
                         new
                         {
                             Id = 1,
-                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840),
+                            CreatedAt = new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1790),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
                             Id = 2,
-                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840),
+                            CreatedAt = new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1790),
                             Name = "User",
                             NormalizedName = "USER"
                         });
@@ -229,7 +170,7 @@ namespace Data.Migrations
                             Id = 1,
                             AccessFailedCount = 0,
                             ConcurrencyStamp = "4ea1a2fc-a47c-44fe-b404-a70225b2b390",
-                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9820),
+                            CreatedAt = new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1690),
                             Email = "icko15.8@gmail.com",
                             EmailConfirmed = true,
                             LockoutEnabled = true,
@@ -270,13 +211,13 @@ namespace Data.Migrations
                         {
                             UserId = 1,
                             RoleId = 1,
-                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9860)
+                            CreatedAt = new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1800)
                         },
                         new
                         {
                             UserId = 1,
                             RoleId = 2,
-                            CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9860)
+                            CreatedAt = new DateTime(2023, 12, 3, 12, 43, 10, 118, DateTimeKind.Utc).AddTicks(1810)
                         });
                 });
 
@@ -368,28 +309,6 @@ namespace Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("Data.Entities.Conversation", b =>
-                {
-                    b.HasOne("Data.Entities.User", "User")
-                        .WithMany("Conversations")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Data.Entities.ConversationEntry", b =>
-                {
-                    b.HasOne("Data.Entities.Conversation", "Conversation")
-                        .WithMany("Entries")
-                        .HasForeignKey("ConversationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Conversation");
-                });
-
             modelBuilder.Entity("Data.Entities.UserRole", b =>
                 {
                     b.HasOne("Data.Entities.Role", null)
@@ -439,16 +358,6 @@ namespace Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Data.Entities.Conversation", b =>
-                {
-                    b.Navigation("Entries");
-                });
-
-            modelBuilder.Entity("Data.Entities.User", b =>
-                {
-                    b.Navigation("Conversations");
                 });
 #pragma warning restore 612, 618
         }
