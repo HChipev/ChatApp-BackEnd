@@ -1,3 +1,4 @@
+using Back_End.Controllers.Abstract;
 using Data.ViewModels.Identity.Models;
 using Data.ViewModels.Token.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -8,7 +9,7 @@ namespace Back_End.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class IdentityController : ControllerBase
+    public class IdentityController : AbstractController
     {
         private readonly IIdentityService _identityService;
 

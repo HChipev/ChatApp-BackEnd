@@ -5,8 +5,8 @@ namespace Data.Repository
 {
     public interface IRepository<T> where T : IBaseEntity
     {
-        IQueryable<T> GetAll();
-        T? Find(int id);
+        IQueryable<T> GetAll(params Expression<Func<T, object>>[] includes);
+        T? Find(int id, params Expression<Func<T, object>>[] includes);
         void Add(T entity);
         void Update(T entity);
         T? Remove(int id);

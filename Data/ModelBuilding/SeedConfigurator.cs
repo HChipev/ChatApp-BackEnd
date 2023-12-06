@@ -35,7 +35,7 @@ namespace Data.ModelBuilding
                     AccessFailedCount = 0,
                     SecurityStamp = "f5bd309e-5ebc-40dd-b0fc-655cfea70a70",
                     ConcurrencyStamp = "4ea1a2fc-a47c-44fe-b404-a70225b2b390",
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9820)
                 }
             };
 
@@ -51,14 +51,14 @@ namespace Data.ModelBuilding
                     Id = 1,
                     Name = "Admin",
                     NormalizedName = "ADMIN",
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 },
                 new()
                 {
                     Id = 2,
                     Name = "User",
                     NormalizedName = "USER",
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 }
             };
 
@@ -73,13 +73,13 @@ namespace Data.ModelBuilding
                 {
                     UserId = 1,
                     RoleId = 1,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9860)
                 },
                 new()
                 {
                     UserId = 1,
                     RoleId = 2,
-                    CreatedAt = DateTime.UtcNow
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9860)
                 }
             };
 

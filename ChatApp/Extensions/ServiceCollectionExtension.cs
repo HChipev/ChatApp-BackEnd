@@ -5,13 +5,17 @@ using Data;
 using Data.Entities;
 using Data.Repository;
 using Data.ViewModels.Identity.Profiles;
+using Data.ViewModels.RabbitMQ.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Service.Abstract;
+using Service.EventHandlers.Implementations;
+using Service.EventHandlers.Interfaces;
 using Service.Implementations;
+using Service.Interfaces;
 
 namespace Back_End.Extensions
 {
@@ -91,6 +95,29 @@ namespace Back_End.Extensions
                     });
                 });
             }
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterRabbitMQBus(this IServiceCollection services,
+            IConfiguration configuration)
+        {
+            services.AddSingleton<IEventBus, RabbitMqEventBus>(sp =>
+            {
+                var hostName = configuration["RabbitMQ:HostName"];
+                var userName = configuration["RabbitMQ:UserName"];
+                var password = configuration["RabbitMQ:Password"];
+                var virtualHost = configuration["RabbitMQ:VirtualHost"];
+
+                var connectionString = $"amqp://{userName}:{password}@{hostName}/{virtualHost}";
+
+                var rabbitMq = new RabbitMqEventBus(connectionString, sp.GetRequiredService<IServiceScopeFactory>());
+                rabbitMq.Subscribe<GenerateAnswerQueue, GenerateAnswerEventHandler>();
+
+                return rabbitMq;
+            });
+
+            services.AddScoped<IEventHandler<GenerateAnswerQueue>, GenerateAnswerEventHandler>();
 
             return services;
         }

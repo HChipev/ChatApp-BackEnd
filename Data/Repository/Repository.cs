@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using Data.Entities;
 using Data.Entities.Abstract;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,22 +15,6 @@ namespace Data.Repository
             _entities = context.Set<T>();
         }
 
-        public IQueryable<T> GetAll()
-        {
-            return _entities.AsQueryable();
-        }
-
-        public T? Find(int id)
-        {
-            var entity = _entities.Find(id);
-            if (entity is null)
-            {
-                return null;
-            }
-
-            return entity;
-        }
-
         public void Add(T entity)
         {
             _entities.Add(entity);
@@ -44,20 +27,12 @@ namespace Data.Repository
 
         public T? FindByCondition(Expression<Func<T, bool>> predicate)
         {
-            var entity = _entities.FirstOrDefault(predicate);
-            if (entity is null)
-            {
-                return null;
-            }
-
-            return entity;
+            return _entities.FirstOrDefault(predicate);
         }
 
         public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate)
         {
-            var entities = _entities.Where(predicate);
-
-            return entities.AsQueryable();
+            return _entities.Where(predicate).AsQueryable();
         }
 
         public T? Remove(int id)
@@ -88,6 +63,23 @@ namespace Data.Repository
             }
 
             _entities.RemoveRange(entities);
+        }
+
+        public T? Find(int id, params Expression<Func<T, object>>[] includes)
+        {
+            var query = _entities.AsQueryable();
+
+            query = includes.Aggregate(query, (current, include) => current.Include(include));
+
+            return query.FirstOrDefault(e => EF.Property<int>(e, "Id") == id);
+        }
+
+        public IQueryable<T> GetAll(params Expression<Func<T, object>>[] includes)
+        {
+            var query = _entities.AsQueryable();
+
+            query = includes.Aggregate(query, (current, include) => current.Include(include));
+            return query;
         }
     }
 }

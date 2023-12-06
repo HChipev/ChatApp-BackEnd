@@ -8,6 +8,8 @@ namespace Data.Entities
 
         public string Title { get; set; }
 
+        public string ChatHistory { get; set; } = "[]";
+
         public int UserId { get; set; }
         public User User { get; set; }
 
