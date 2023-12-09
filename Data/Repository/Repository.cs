@@ -15,9 +15,9 @@ namespace Data.Repository
             _entities = context.Set<T>();
         }
 
-        public void Add(T entity)
+        public T Add(T entity)
         {
-            _entities.Add(entity);
+            return _entities.Add(entity).Entity;
         }
 
         public bool SaveChanges()
@@ -48,10 +48,9 @@ namespace Data.Repository
             return entity;
         }
 
-        public void Update(T obj)
+        public T Update(T entity)
         {
-            _entities.Attach(obj);
-            _context.Entry(obj).State = EntityState.Modified;
+            return _entities.Update(entity).Entity;
         }
 
         public void Remove(Expression<Func<T, bool>> predicate)
@@ -80,6 +79,16 @@ namespace Data.Repository
 
             query = includes.Aggregate(query, (current, include) => current.Include(include));
             return query;
+        }
+
+        public IEnumerable<T> AddRange(IEnumerable<T> entities)
+        {
+            return entities.Select(entity => _entities.Add(entity).Entity).ToList();
+        }
+
+        public IEnumerable<T> UpdateRange(IEnumerable<T> entities)
+        {
+            return entities.Select(entity => _entities.Update(entity).Entity).ToList();
         }
     }
 }

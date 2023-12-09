@@ -5,14 +5,16 @@ namespace Data.Repository
 {
     public interface IRepository<T> where T : IBaseEntity
     {
-        IQueryable<T> GetAll(params Expression<Func<T, object>>[] includes);
-        T? Find(int id, params Expression<Func<T, object>>[] includes);
-        void Add(T entity);
-        void Update(T entity);
-        T? Remove(int id);
-        void Remove(Expression<Func<T, bool>> predicate);
-        bool SaveChanges();
-        T? FindByCondition(Expression<Func<T, bool>> predicate);
-        IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate);
+        public IQueryable<T> GetAll(params Expression<Func<T, object>>[] includes);
+        public T? Find(int id, params Expression<Func<T, object>>[] includes);
+        public T Add(T entity);
+        public IEnumerable<T> AddRange(IEnumerable<T> entities);
+        public T Update(T entity);
+        public IEnumerable<T> UpdateRange(IEnumerable<T> entities);
+        public T? Remove(int id);
+        public void Remove(Expression<Func<T, bool>> predicate);
+        public bool SaveChanges();
+        public T? FindByCondition(Expression<Func<T, bool>> predicate);
+        public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate);
     }
 }

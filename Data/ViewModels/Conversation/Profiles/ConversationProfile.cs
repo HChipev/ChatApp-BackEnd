@@ -1,12 +1,13 @@
 using AutoMapper;
+using Data.Entities;
 using Data.ViewModels.Conversation.Models;
 using Data.ViewModels.RabbitMQ.Models;
 
 namespace Data.ViewModels.Conversation.Profiles
 {
-    public class GenerateQuestionProfile : Profile
+    public class ConversationProfile : Profile
     {
-        public GenerateQuestionProfile()
+        public ConversationProfile()
         {
             CreateMap<GenerateQuestionViewModel, GenerateQuestionQueue>();
 
@@ -22,6 +23,17 @@ namespace Data.ViewModels.Conversation.Profiles
                     , opt => opt.MapFrom(src => src.Id))
                 .ForMember(dest => dest.ModifiedAtUtc
                     , opt => opt.MapFrom(src => src.ModifiedAt ?? src.CreatedAt));
+
+            CreateMap<ConversationEntry, ConversationViewModel>()
+                .ForMember(dest => dest.Message
+                    , opt => opt.MapFrom(src => new ConversationEntryViewModel
+                    {
+                        Text = src.Text,
+                        IsFromUser = src.IsFromUser
+                    })
+                );
+
+            CreateMap<GenerateQuestionViewModel, GenerateAnswerQueue>();
         }
     }
 }

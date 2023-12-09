@@ -99,7 +99,7 @@ namespace Back_End.Extensions
             return services;
         }
 
-        public static IServiceCollection RegisterRabbitMQBus(this IServiceCollection services,
+        public static IServiceCollection RegisterRabbitMqBus(this IServiceCollection services,
             IConfiguration configuration)
         {
             services.AddSingleton<IEventBus, RabbitMqEventBus>(sp =>
@@ -113,11 +113,13 @@ namespace Back_End.Extensions
 
                 var rabbitMq = new RabbitMqEventBus(connectionString, sp.GetRequiredService<IServiceScopeFactory>());
                 rabbitMq.Subscribe<GenerateAnswerQueue, GenerateAnswerEventHandler>();
+                rabbitMq.Subscribe<SaveDocumentsQueue, SaveDocumentsEventHandler>();
 
                 return rabbitMq;
             });
 
             services.AddScoped<IEventHandler<GenerateAnswerQueue>, GenerateAnswerEventHandler>();
+            services.AddScoped<IEventHandler<SaveDocumentsQueue>, SaveDocumentsEventHandler>();
 
             return services;
         }

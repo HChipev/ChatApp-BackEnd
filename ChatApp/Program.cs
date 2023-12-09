@@ -15,7 +15,7 @@ builder.Services.ConfigureServices(builder.Configuration, builder.Environment);
 builder.Services.RegisterFilters();
 builder.Services.RegisterSwagger();
 builder.Services.RegisterAutoMapper(builder.Configuration);
-builder.Services.RegisterRabbitMQBus(builder.Configuration);
+builder.Services.RegisterRabbitMqBus(builder.Configuration);
 
 var app = builder.Build();
 

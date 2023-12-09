@@ -16,7 +16,10 @@
 
     <ItemGroup>
         <Folder Include="Migrations\"/>
-        <Folder Include="ViewModels\RabbitMQ\Profiles\"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Common\Common.csproj"/>
     </ItemGroup>
 
 </Project>

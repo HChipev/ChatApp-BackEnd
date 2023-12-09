@@ -17,6 +17,8 @@ namespace Data.Entities
 
         public bool IsDeleted { get; set; } = false;
 
+        public bool IsShareable { get; set; } = false;
+
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

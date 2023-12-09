@@ -15,7 +15,7 @@ namespace Service.EventHandlers.Implementations
 
         public void Handle(GenerateAnswerQueue @event)
         {
-            _conversationService.AddConversation(@event);
+            _conversationService.AddToExistingConversation(@event, false);
         }
     }
 }

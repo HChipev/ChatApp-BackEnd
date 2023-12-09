@@ -26,14 +26,21 @@ namespace Back_End.Controllers
         }
 
         [HttpGet("all")]
-        public IActionResult GetUSerConversations([FromQuery] int userId)
+        public IActionResult GetUserConversations([FromQuery] int userId)
         {
             if (GetUserId() != userId)
             {
                 return Forbid();
             }
 
-            var result = _conversationService.GetUserConversations(userId);
+            var result = _conversationService.GetConversations(userId);
+            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
+        }
+
+        [HttpGet("{conversationId:int}")]
+        public IActionResult GetConversation([FromRoute] int conversationId)
+        {
+            var result = _conversationService.GetConversation(GetUserId(), conversationId);
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
     }
