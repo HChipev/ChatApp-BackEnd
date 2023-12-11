@@ -60,7 +60,7 @@ namespace Service.Implementations
             }
         }
 
-        public ServiceResult<UserConversationViewModel> GetConversations(int userId)
+        public ServiceResult<UserConversationViewModel> GetConversationsByUserId(int userId)
         {
             var userConversation =
                 _mapper.Map<List<ConversationSimpleViewModel>>(

@@ -35,7 +35,7 @@ namespace Data.Repository
             return _entities.Where(predicate).AsQueryable();
         }
 
-        public T? Remove(int id)
+        public T? Delete(int id)
         {
             var entity = Find(id);
             if (entity is null)
@@ -53,15 +53,9 @@ namespace Data.Repository
             return _entities.Update(entity).Entity;
         }
 
-        public void Remove(Expression<Func<T, bool>> predicate)
+        public IEnumerable<T> DeleteByCondition(Expression<Func<T, bool>> predicate)
         {
-            var entities = _entities.Where(predicate).ToList();
-            if (entities.Count < 1)
-            {
-                return;
-            }
-
-            _entities.RemoveRange(entities);
+            return _entities.Select(entity => _entities.Remove(entity).Entity).ToList();
         }
 
         public T? Find(int id, params Expression<Func<T, object>>[] includes)

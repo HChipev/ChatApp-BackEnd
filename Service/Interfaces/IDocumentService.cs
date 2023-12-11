@@ -9,7 +9,8 @@ namespace Service.Interfaces
     {
         public ServiceResult<bool> AddDocuments(DocumentsViewModel models);
         public void UpdateDocuments(SaveDocumentsQueue models);
-
         public ServiceResult<DocumentsSimpleViewModel> GetDocuments();
+        public ServiceResult<bool> RestoreDocument(int documentId);
+        public ServiceResult<bool> DeleteDocument(int documentId);
     }
 }

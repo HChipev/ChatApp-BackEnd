@@ -11,8 +11,8 @@ namespace Data.Repository
         public IEnumerable<T> AddRange(IEnumerable<T> entities);
         public T Update(T entity);
         public IEnumerable<T> UpdateRange(IEnumerable<T> entities);
-        public T? Remove(int id);
-        public void Remove(Expression<Func<T, bool>> predicate);
+        public T? Delete(int id);
+        public IEnumerable<T> DeleteByCondition(Expression<Func<T, bool>> predicate);
         public bool SaveChanges();
         public T? FindByCondition(Expression<Func<T, bool>> predicate);
         public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate);

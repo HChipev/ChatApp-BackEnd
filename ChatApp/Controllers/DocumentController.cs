@@ -33,5 +33,21 @@ namespace Back_End.Controllers
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
+
+        [HttpDelete("delete/{documentId}")]
+        public IActionResult DeleteDocument(int documentId)
+        {
+            var result = _documentService.DeleteDocument(documentId);
+
+            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
+        }
+
+        [HttpPut("restore/{documentId}")]
+        public IActionResult RestoreDocument(int documentId)
+        {
+            var result = _documentService.RestoreDocument(documentId);
+
+            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
+        }
     }
 }

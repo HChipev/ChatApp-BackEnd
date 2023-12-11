@@ -33,7 +33,7 @@ namespace Back_End.Controllers
                 return Forbid();
             }
 
-            var result = _conversationService.GetConversations(userId);
+            var result = _conversationService.GetConversationsByUserId(userId);
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 

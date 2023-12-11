@@ -15,6 +15,8 @@ namespace Data.Entities
 
         public IEnumerable<string> VectorIds { get; set; } = new List<string>();
 
+        public bool IsDeleted { get; set; } = false;
+
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

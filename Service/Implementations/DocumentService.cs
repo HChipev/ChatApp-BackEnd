@@ -58,5 +58,56 @@ namespace Service.Implementations
                 Message = ""
             };
         }
+
+        public ServiceResult<bool> RestoreDocument(int documentId)
+        {
+            try
+            {
+                var deletedDocument = _documentRepository.Find(documentId);
+                if (deletedDocument is null)
+                {
+                    return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "No document found!" };
+                }
+
+                deletedDocument.IsDeleted = false;
+
+                var restoredDocument = _documentRepository.Update(deletedDocument);
+                _documentRepository.SaveChanges();
+
+                _eventBus.Publish(_mapper.Map<LoadDocumentsQueue>(new List<Document> { restoredDocument }));
+
+                return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = ex.Message };
+            }
+        }
+
+        public ServiceResult<bool> DeleteDocument(int documentId)
+        {
+            try
+            {
+                var document = _documentRepository.Find(documentId);
+                if (document is null)
+                {
+                    return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "No document found!" };
+                }
+
+                _eventBus.Publish(_mapper.Map<DeleteDocumentsQueue>(new List<Document> { document }));
+
+                document.IsDeleted = true;
+                document.VectorIds = new List<string>();
+                _documentRepository.Update(document);
+
+                _documentRepository.SaveChanges();
+
+                return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = ex.Message };
+            }
+        }
     }
 }

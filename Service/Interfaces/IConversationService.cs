@@ -13,7 +13,7 @@ namespace Service.Interfaces
 
         public ConversationSimpleViewModel AddToExistingConversation(GenerateAnswerQueue model, bool isFromUser);
 
-        public ServiceResult<UserConversationViewModel> GetConversations(int userId);
+        public ServiceResult<UserConversationViewModel> GetConversationsByUserId(int userId);
 
         public ServiceResult<List<ConversationViewModel>> GetConversation(int userId, int conversationId);
     }
