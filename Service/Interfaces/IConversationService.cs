@@ -7,11 +7,11 @@ namespace Service.Interfaces
 {
     public interface IConversationService : IService
     {
-        public ServiceResult<ConversationSimpleViewModel> GenerateAnswer(GenerateQuestionViewModel model);
+        public Task<ServiceResult<ConversationSimpleViewModel>> GenerateAnswer(GenerateQuestionViewModel model);
 
         public ConversationSimpleViewModel AddNewConversation(GenerateAnswerQueue model);
 
-        public ConversationSimpleViewModel AddToExistingConversation(GenerateAnswerQueue model, bool isFromUser);
+        public Task<ConversationSimpleViewModel> AddToExistingConversation(GenerateAnswerQueue model, bool isFromUser);
 
         public ServiceResult<UserConversationViewModel> GetConversationsByUserId(int userId);
 

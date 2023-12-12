@@ -7,10 +7,10 @@ namespace Service.Interfaces
 {
     public interface IDocumentService : IService
     {
-        public ServiceResult<bool> AddDocuments(DocumentsViewModel models);
+        public Task<ServiceResult<bool>> AddDocuments(DocumentsViewModel models, int userId);
         public void UpdateDocuments(SaveDocumentsQueue models);
         public ServiceResult<DocumentsSimpleViewModel> GetDocuments();
-        public ServiceResult<bool> RestoreDocument(int documentId);
-        public ServiceResult<bool> DeleteDocument(int documentId);
+        public Task<ServiceResult<bool>> RestoreDocument(int documentId, int userId);
+        public Task<ServiceResult<bool>> DeleteDocument(int documentId, int userId);
     }
 }

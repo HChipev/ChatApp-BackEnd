@@ -4,6 +4,8 @@ using Data.Entities;
 using Data.Repository;
 using Data.ViewModels.Conversation.Models;
 using Data.ViewModels.RabbitMQ.Models;
+using Microsoft.AspNetCore.SignalR;
+using Service.Hubs;
 using Service.Interfaces;
 
 namespace Service.Implementations
@@ -12,16 +14,19 @@ namespace Service.Implementations
     {
         private readonly IRepository<Conversation> _conversationRepository;
         private readonly IEventBus _eventBus;
+        private readonly IHubContext<RefetchConversationsHub> _hubContext;
         private readonly IMapper _mapper;
 
-        public ConversationService(IEventBus eventBus, IMapper mapper, IRepository<Conversation> conversationRepository)
+        public ConversationService(IEventBus eventBus, IMapper mapper, IRepository<Conversation> conversationRepository,
+            IHubContext<RefetchConversationsHub> hubContext)
         {
             _eventBus = eventBus;
             _mapper = mapper;
             _conversationRepository = conversationRepository;
+            _hubContext = hubContext;
         }
 
-        public ServiceResult<ConversationSimpleViewModel> GenerateAnswer(GenerateQuestionViewModel model)
+        public async Task<ServiceResult<ConversationSimpleViewModel>> GenerateAnswer(GenerateQuestionViewModel model)
         {
             try
             {
@@ -45,7 +50,7 @@ namespace Service.Implementations
                 if (model.ConversationId is not null)
                 {
                     conversationSimpleViewModel =
-                        AddToExistingConversation(_mapper.Map<GenerateAnswerQueue>(model), true);
+                        await AddToExistingConversation(_mapper.Map<GenerateAnswerQueue>(model), true);
                 }
 
                 _eventBus.Publish(message);
@@ -125,7 +130,8 @@ namespace Service.Implementations
             return _mapper.Map<ConversationSimpleViewModel>(addedConversation);
         }
 
-        public ConversationSimpleViewModel AddToExistingConversation(GenerateAnswerQueue model, bool isFromUser)
+        public async Task<ConversationSimpleViewModel> AddToExistingConversation(GenerateAnswerQueue model,
+            bool isFromUser)
         {
             var conversation = _conversationRepository.Find(model.ConversationId.Value, x => x.Entries);
             if (conversation is not null)
@@ -138,6 +144,8 @@ namespace Service.Implementations
                     ConversationId = conversation.Id
                 });
             }
+
+            await _hubContext.Clients.Group(model.UserId.ToString()).SendAsync("RefetchConversations");
 
             _conversationRepository.SaveChanges();
 

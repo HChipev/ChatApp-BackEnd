@@ -15,7 +15,10 @@ namespace Back_End.Filters
 
             var logMessage = $"*******{targetSide}-------{message}*******{stackTrace}*******{Environment.NewLine}";
 
-            context.Result = new BadRequestResult();
+            context.Result = new ObjectResult("Error has occurred!")
+            {
+                StatusCode = 999
+            };
         }
     }
 }

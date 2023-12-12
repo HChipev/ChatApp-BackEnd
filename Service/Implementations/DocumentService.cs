@@ -4,6 +4,8 @@ using Data.Entities;
 using Data.Repository;
 using Data.ViewModels.Document.Models;
 using Data.ViewModels.RabbitMQ.Models;
+using Microsoft.AspNetCore.SignalR;
+using Service.Hubs;
 using Service.Interfaces;
 
 namespace Service.Implementations
@@ -12,31 +14,16 @@ namespace Service.Implementations
     {
         private readonly IRepository<Document> _documentRepository;
         private readonly IEventBus _eventBus;
+        private readonly IHubContext<RefetchDocumentsHub> _hubContext;
         private readonly IMapper _mapper;
 
-        public DocumentService(IMapper mapper, IRepository<Document> documentRepository, IEventBus eventBus)
+        public DocumentService(IMapper mapper, IRepository<Document> documentRepository, IEventBus eventBus,
+            IHubContext<RefetchDocumentsHub> hubContext)
         {
             _mapper = mapper;
             _documentRepository = documentRepository;
             _eventBus = eventBus;
-        }
-
-        public ServiceResult<bool> AddDocuments(DocumentsViewModel models)
-        {
-            try
-            {
-                var documents = _documentRepository.AddRange(_mapper.Map<List<Document>>(models.Documents));
-
-                _documentRepository.SaveChanges();
-
-                _eventBus.Publish(_mapper.Map<LoadDocumentsQueue>(documents.ToList()));
-
-                return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
-            }
-            catch (Exception ex)
-            {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = ex.Message };
-            }
+            _hubContext = hubContext;
         }
 
         public void UpdateDocuments(SaveDocumentsQueue models)
@@ -59,7 +46,7 @@ namespace Service.Implementations
             };
         }
 
-        public ServiceResult<bool> RestoreDocument(int documentId)
+        public async Task<ServiceResult<bool>> RestoreDocument(int documentId, int userId)
         {
             try
             {
@@ -76,6 +63,8 @@ namespace Service.Implementations
 
                 _eventBus.Publish(_mapper.Map<LoadDocumentsQueue>(new List<Document> { restoredDocument }));
 
+                await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchDocuments");
+
                 return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
             }
             catch (Exception ex)
@@ -84,7 +73,7 @@ namespace Service.Implementations
             }
         }
 
-        public ServiceResult<bool> DeleteDocument(int documentId)
+        public async Task<ServiceResult<bool>> DeleteDocument(int documentId, int userId)
         {
             try
             {
@@ -101,6 +90,28 @@ namespace Service.Implementations
                 _documentRepository.Update(document);
 
                 _documentRepository.SaveChanges();
+
+                await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchDocuments");
+
+                return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+            }
+            catch (Exception ex)
+            {
+                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = ex.Message };
+            }
+        }
+
+        public async Task<ServiceResult<bool>> AddDocuments(DocumentsViewModel models, int userId)
+        {
+            try
+            {
+                var documents = _documentRepository.AddRange(_mapper.Map<List<Document>>(models.Documents));
+
+                _documentRepository.SaveChanges();
+
+                _eventBus.Publish(_mapper.Map<LoadDocumentsQueue>(documents.ToList()));
+
+                await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchDocuments");
 
                 return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
             }

@@ -1,4 +1,5 @@
 using Back_End.Extensions;
+using Service.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +17,7 @@ builder.Services.RegisterFilters();
 builder.Services.RegisterSwagger();
 builder.Services.RegisterAutoMapper(builder.Configuration);
 builder.Services.RegisterRabbitMqBus(builder.Configuration);
+builder.Services.RegisterSignalR();
 
 var app = builder.Build();
 
@@ -32,6 +34,9 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.MapHub<RefetchDocumentsHub>("/Hubs/refetch-documents");
+app.MapHub<RefetchConversationsHub>("/Hubs/refetch-conversations");
 
 app.MapControllers();
 

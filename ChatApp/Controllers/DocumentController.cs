@@ -1,3 +1,4 @@
+using Back_End.Controllers.Abstract;
 using Common.Classes;
 using Data.ViewModels.Document.Models;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +10,7 @@ namespace Back_End.Controllers
     [Route("api/[controller]")]
     [ApiController]
     [Authorize(Roles = Roles.Admin)]
-    public class DocumentController : ControllerBase
+    public class DocumentController : AbstractController
     {
         private readonly IDocumentService _documentService;
 
@@ -19,9 +20,9 @@ namespace Back_End.Controllers
         }
 
         [HttpPost("add")]
-        public IActionResult LoadDocuments([FromBody] DocumentsViewModel models)
+        public async Task<IActionResult> LoadDocuments([FromBody] DocumentsViewModel models)
         {
-            var result = _documentService.AddDocuments(models);
+            var result = await _documentService.AddDocuments(models, GetUserId());
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
@@ -35,17 +36,17 @@ namespace Back_End.Controllers
         }
 
         [HttpDelete("delete/{documentId}")]
-        public IActionResult DeleteDocument(int documentId)
+        public async Task<IActionResult> DeleteDocument(int documentId)
         {
-            var result = _documentService.DeleteDocument(documentId);
+            var result = await _documentService.DeleteDocument(documentId, GetUserId());
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 
         [HttpPut("restore/{documentId}")]
-        public IActionResult RestoreDocument(int documentId)
+        public async Task<IActionResult> RestoreDocument(int documentId)
         {
-            var result = _documentService.RestoreDocument(documentId);
+            var result = await _documentService.RestoreDocument(documentId, GetUserId());
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }

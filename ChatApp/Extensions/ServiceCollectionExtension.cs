@@ -75,9 +75,10 @@ namespace Back_End.Extensions
                 {
                     options.AddDefaultPolicy(builder =>
                     {
-                        builder.WithOrigins("*")
+                        builder.WithOrigins("http://localhost:5173")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
+                            .AllowCredentials()
                             .WithExposedHeaders("*");
                     });
                 });
@@ -91,6 +92,7 @@ namespace Back_End.Extensions
                         builder.WithOrigins("https://hristo.ch", "http://localhost:5173/")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
+                            .AllowCredentials()
                             .WithExposedHeaders("*");
                     });
                 });
@@ -194,6 +196,13 @@ namespace Back_End.Extensions
         public static IServiceCollection RegisterFilters(this IServiceCollection services)
         {
             services.AddControllers(options => { options.Filters.Add<CustomExceptionFilter>(); });
+
+            return services;
+        }
+
+        public static IServiceCollection RegisterSignalR(this IServiceCollection services)
+        {
+            services.AddSignalR();
 
             return services;
         }

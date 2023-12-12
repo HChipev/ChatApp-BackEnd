@@ -19,9 +19,9 @@ namespace Back_End.Controllers
         }
 
         [HttpPost("ask")]
-        public IActionResult GenerateAnswer([FromBody] GenerateQuestionViewModel model)
+        public async Task<IActionResult> GenerateAnswer([FromBody] GenerateQuestionViewModel model)
         {
-            var result = _conversationService.GenerateAnswer(model);
+            var result = await _conversationService.GenerateAnswer(model);
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 
