@@ -22,7 +22,7 @@ namespace Back_End.Controllers
         [HttpPost("add")]
         public async Task<IActionResult> LoadDocuments([FromBody] DocumentsViewModel models)
         {
-            var result = await _documentService.AddDocuments(models, GetUserId());
+            var result = await _documentService.AddDocumentsAsync(models, GetUserId());
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
@@ -38,7 +38,7 @@ namespace Back_End.Controllers
         [HttpDelete("delete/{documentId}")]
         public async Task<IActionResult> DeleteDocument(int documentId)
         {
-            var result = await _documentService.DeleteDocument(documentId, GetUserId());
+            var result = await _documentService.DeleteDocumentAsync(documentId, GetUserId());
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
@@ -46,7 +46,7 @@ namespace Back_End.Controllers
         [HttpPut("restore/{documentId}")]
         public async Task<IActionResult> RestoreDocument(int documentId)
         {
-            var result = await _documentService.RestoreDocument(documentId, GetUserId());
+            var result = await _documentService.RestoreDocumentAsync(documentId, GetUserId());
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }

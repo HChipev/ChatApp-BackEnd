@@ -26,7 +26,8 @@ namespace Service.Implementations
             _hubContext = hubContext;
         }
 
-        public async Task<ServiceResult<ConversationSimpleViewModel>> GenerateAnswer(GenerateQuestionViewModel model)
+        public async Task<ServiceResult<ConversationSimpleViewModel>> GenerateAnswerAsync(
+            GenerateQuestionViewModel model)
         {
             try
             {
@@ -50,7 +51,7 @@ namespace Service.Implementations
                 if (model.ConversationId is not null)
                 {
                     conversationSimpleViewModel =
-                        await AddToExistingConversation(_mapper.Map<GenerateAnswerQueue>(model), true);
+                        await AddToExistingConversationAsync(_mapper.Map<GenerateAnswerQueue>(model), true);
                 }
 
                 _eventBus.Publish(message);
@@ -79,13 +80,13 @@ namespace Service.Implementations
             };
         }
 
-        public ServiceResult<List<ConversationViewModel>> GetConversation(int userId, int conversationId)
+        public ServiceResult<ConversationsViewModel> GetConversation(int userId, int conversationId)
         {
             var conversation = _conversationRepository.Find(conversationId, x => x.Entries);
 
             if (conversation is null)
             {
-                return new ServiceResult<List<ConversationViewModel>>
+                return new ServiceResult<ConversationsViewModel>
                 {
                     IsSuccess = false, Data = null,
                     Message = "No conversation found!"
@@ -94,19 +95,19 @@ namespace Service.Implementations
 
             if (userId != conversation.UserId && !conversation.IsShareable)
             {
-                return new ServiceResult<List<ConversationViewModel>>
+                return new ServiceResult<ConversationsViewModel>
                 {
                     IsSuccess = false, Data = null,
                     Message = "Can't open conversation!"
                 };
             }
 
-            var conversationViewModel = _mapper.Map<List<ConversationViewModel>>(conversation.Entries);
+            var conversationsList = _mapper.Map<List<ConversationViewModel>>(conversation.Entries);
 
 
-            return new ServiceResult<List<ConversationViewModel>>
+            return new ServiceResult<ConversationsViewModel>
             {
-                IsSuccess = true, Data = conversationViewModel,
+                IsSuccess = true, Data = _mapper.Map<ConversationsViewModel>(conversationsList),
                 Message = ""
             };
         }
@@ -130,7 +131,7 @@ namespace Service.Implementations
             return _mapper.Map<ConversationSimpleViewModel>(addedConversation);
         }
 
-        public async Task<ConversationSimpleViewModel> AddToExistingConversation(GenerateAnswerQueue model,
+        public async Task<ConversationSimpleViewModel> AddToExistingConversationAsync(GenerateAnswerQueue model,
             bool isFromUser)
         {
             var conversation = _conversationRepository.Find(model.ConversationId.Value, x => x.Entries);
@@ -145,9 +146,9 @@ namespace Service.Implementations
                 });
             }
 
-            await _hubContext.Clients.Group(model.UserId.ToString()).SendAsync("RefetchConversations");
-
             _conversationRepository.SaveChanges();
+
+            await _hubContext.Clients.Group(model.UserId.ToString()).SendAsync("RefetchConversations");
 
             return _mapper.Map<ConversationSimpleViewModel>(conversation);
         }

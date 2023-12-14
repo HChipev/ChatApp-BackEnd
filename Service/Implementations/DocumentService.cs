@@ -46,7 +46,7 @@ namespace Service.Implementations
             };
         }
 
-        public async Task<ServiceResult<bool>> RestoreDocument(int documentId, int userId)
+        public async Task<ServiceResult<bool>> RestoreDocumentAsync(int documentId, int userId)
         {
             try
             {
@@ -73,7 +73,7 @@ namespace Service.Implementations
             }
         }
 
-        public async Task<ServiceResult<bool>> DeleteDocument(int documentId, int userId)
+        public async Task<ServiceResult<bool>> DeleteDocumentAsync(int documentId, int userId)
         {
             try
             {
@@ -101,7 +101,7 @@ namespace Service.Implementations
             }
         }
 
-        public async Task<ServiceResult<bool>> AddDocuments(DocumentsViewModel models, int userId)
+        public async Task<ServiceResult<bool>> AddDocumentsAsync(DocumentsViewModel models, int userId)
         {
             try
             {

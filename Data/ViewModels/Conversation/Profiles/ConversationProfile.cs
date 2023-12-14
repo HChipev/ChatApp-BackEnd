@@ -33,6 +33,9 @@ namespace Data.ViewModels.Conversation.Profiles
                     })
                 );
 
+            CreateMap<List<ConversationViewModel>, ConversationsViewModel>().ForMember(dest => dest.Messages
+                , opt => opt.MapFrom(src => src));
+
             CreateMap<GenerateQuestionViewModel, GenerateAnswerQueue>();
         }
     }

@@ -55,7 +55,14 @@ namespace Data.Repository
 
         public IEnumerable<T> DeleteByCondition(Expression<Func<T, bool>> predicate)
         {
-            return _entities.Select(entity => _entities.Remove(entity).Entity).ToList();
+            var entitiesToRemove = _entities.Where(predicate).ToList();
+
+            foreach (var entity in entitiesToRemove)
+            {
+                _entities.Remove(entity);
+            }
+
+            return entitiesToRemove;
         }
 
         public T? Find(int id, params Expression<Func<T, object>>[] includes)
