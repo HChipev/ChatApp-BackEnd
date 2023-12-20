@@ -15,7 +15,7 @@ namespace Service.EventHandlers.Implementations
 
         public void Handle(GenerateAnswerQueue @event)
         {
-            _conversationService.AddToExistingConversationAsync(@event, false);
+            _conversationService.AddToExistingConversationAsync(@event.UserId, @event, false);
         }
     }
 }

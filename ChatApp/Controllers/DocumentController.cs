@@ -35,7 +35,7 @@ namespace Back_End.Controllers
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 
-        [HttpDelete("delete/{documentId}")]
+        [HttpDelete("delete/{documentId:int}")]
         public async Task<IActionResult> DeleteDocument(int documentId)
         {
             var result = await _documentService.DeleteDocumentAsync(documentId, GetUserId());
@@ -43,7 +43,7 @@ namespace Back_End.Controllers
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 
-        [HttpPut("restore/{documentId}")]
+        [HttpPut("restore/{documentId:int}")]
         public async Task<IActionResult> RestoreDocument(int documentId)
         {
             var result = await _documentService.RestoreDocumentAsync(documentId, GetUserId());

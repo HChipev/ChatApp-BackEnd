@@ -2,6 +2,7 @@ using AutoMapper;
 using Common.Classes;
 using Data.Entities;
 using Data.Repository;
+using Data.ViewModels.BasicResponseModels;
 using Data.ViewModels.Document.Models;
 using Data.ViewModels.RabbitMQ.Models;
 using Microsoft.AspNetCore.SignalR;
@@ -46,14 +47,15 @@ namespace Service.Implementations
             };
         }
 
-        public async Task<ServiceResult<bool>> RestoreDocumentAsync(int documentId, int userId)
+        public async Task<ServiceResult<BasicResponseViewModel>> RestoreDocumentAsync(int documentId, int userId)
         {
             try
             {
                 var deletedDocument = _documentRepository.Find(documentId);
                 if (deletedDocument is null)
                 {
-                    return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "No document found!" };
+                    return new ServiceResult<BasicResponseViewModel>
+                        { IsSuccess = false, Data = null, Message = "No document found!" };
                 }
 
                 deletedDocument.IsDeleted = false;
@@ -65,22 +67,28 @@ namespace Service.Implementations
 
                 await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchDocuments");
 
-                return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+                return new ServiceResult<BasicResponseViewModel>
+                {
+                    IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully restored document." },
+                    Message = ""
+                };
             }
             catch (Exception ex)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = ex.Message };
+                return new ServiceResult<BasicResponseViewModel>
+                    { IsSuccess = false, Data = null, Message = ex.Message };
             }
         }
 
-        public async Task<ServiceResult<bool>> DeleteDocumentAsync(int documentId, int userId)
+        public async Task<ServiceResult<BasicResponseViewModel>> DeleteDocumentAsync(int documentId, int userId)
         {
             try
             {
                 var document = _documentRepository.Find(documentId);
                 if (document is null)
                 {
-                    return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "No document found!" };
+                    return new ServiceResult<BasicResponseViewModel>
+                        { IsSuccess = false, Data = null, Message = "No document found!" };
                 }
 
                 _eventBus.Publish(_mapper.Map<DeleteDocumentsQueue>(new List<Document> { document }));
@@ -93,15 +101,21 @@ namespace Service.Implementations
 
                 await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchDocuments");
 
-                return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+                return new ServiceResult<BasicResponseViewModel>
+                {
+                    IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully deleted document." },
+                    Message = ""
+                };
             }
             catch (Exception ex)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = ex.Message };
+                return new ServiceResult<BasicResponseViewModel>
+                    { IsSuccess = false, Data = null, Message = ex.Message };
             }
         }
 
-        public async Task<ServiceResult<bool>> AddDocumentsAsync(DocumentsViewModel models, int userId)
+        public async Task<ServiceResult<BasicResponseViewModel>> AddDocumentsAsync(DocumentsViewModel models,
+            int userId)
         {
             try
             {
@@ -113,11 +127,16 @@ namespace Service.Implementations
 
                 await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchDocuments");
 
-                return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+                return new ServiceResult<BasicResponseViewModel>
+                {
+                    IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully added role." },
+                    Message = ""
+                };
             }
             catch (Exception ex)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = ex.Message };
+                return new ServiceResult<BasicResponseViewModel>
+                    { IsSuccess = false, Data = null, Message = ex.Message };
             }
         }
     }

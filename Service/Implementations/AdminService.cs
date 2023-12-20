@@ -3,6 +3,7 @@ using Common.Classes;
 using Data.Entities;
 using Data.Repository;
 using Data.ViewModels.Admin.Models;
+using Data.ViewModels.BasicResponseModels;
 using Microsoft.AspNetCore.SignalR;
 using Service.Hubs;
 using Service.Interfaces;
@@ -25,40 +26,6 @@ namespace Service.Implementations
             _mapper = mapper;
             _userRoleRepository = userRoleRepository;
             _hubContext = hubContext;
-        }
-
-        public async Task<ServiceResult<bool>> DeleteUserAsync(int userId, int loggedInUserId)
-        {
-            var deletedUser = _userRepository.Delete(userId);
-
-            if (deletedUser is null)
-            {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "User doesn't exist!" };
-            }
-
-            _userRepository.SaveChanges();
-
-            await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchUsers");
-
-            return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
-        }
-
-        public async Task<ServiceResult<bool>> AddRoleAsync(RoleSimpleViewModel model, int loggedInUserId)
-        {
-            var existingRole = _roleRepository.FindByCondition(x => x.Name == model.Name);
-
-            if (existingRole is not null)
-            {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "Role already exists!" };
-            }
-
-            _roleRepository.Add(_mapper.Map<Role>(model));
-
-            _roleRepository.SaveChanges();
-
-            await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchRoles");
-
-            return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
         }
 
         public ServiceResult<UsersViewModel> GetUsers()
@@ -93,13 +60,14 @@ namespace Service.Implementations
             };
         }
 
-        public async Task<ServiceResult<bool>> DeleteRoleAsync(int roleId, int loggedInUserId)
+        public async Task<ServiceResult<BasicResponseViewModel>> DeleteRoleAsync(int roleId, int loggedInUserId)
         {
             var role = _roleRepository.FindByCondition(x => x.Id == roleId);
 
             if (role is null)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Data = false, Message = "Role doesn't exists!" };
+                return new ServiceResult<BasicResponseViewModel>
+                    { IsSuccess = false, Data = null, Message = "Role doesn't exists!" };
             }
 
             _roleRepository.Delete(role.Id);
@@ -108,10 +76,60 @@ namespace Service.Implementations
 
             await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchRoles");
 
-            return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+            return new ServiceResult<BasicResponseViewModel>
+            {
+                IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully deleted role." },
+                Message = ""
+            };
         }
 
-        public async Task<ServiceResult<bool>> UpdateUserRolesAsync(UserRolesViewModel model, int loggedInUserId)
+        public async Task<ServiceResult<BasicResponseViewModel>> DeleteUserAsync(int userId, int loggedInUserId)
+        {
+            var deletedUser = _userRepository.Delete(userId);
+
+            if (deletedUser is null)
+            {
+                return new ServiceResult<BasicResponseViewModel>
+                    { IsSuccess = false, Data = null, Message = "User doesn't exist!" };
+            }
+
+            _userRepository.SaveChanges();
+
+            await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchUsers");
+
+            return new ServiceResult<BasicResponseViewModel>
+            {
+                IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully deleted user." },
+                Message = ""
+            };
+        }
+
+        public async Task<ServiceResult<BasicResponseViewModel>> AddRoleAsync(RoleSimpleViewModel model,
+            int loggedInUserId)
+        {
+            var existingRole = _roleRepository.FindByCondition(x => x.Name == model.Name);
+
+            if (existingRole is not null)
+            {
+                return new ServiceResult<BasicResponseViewModel>
+                    { IsSuccess = false, Data = null, Message = "Role already exists!" };
+            }
+
+            _roleRepository.Add(_mapper.Map<Role>(model));
+
+            _roleRepository.SaveChanges();
+
+            await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchRoles");
+
+            return new ServiceResult<BasicResponseViewModel>
+            {
+                IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully added role." },
+                Message = ""
+            };
+        }
+
+        public async Task<ServiceResult<BasicResponseViewModel>> UpdateUserRolesAsync(UserRolesViewModel model,
+            int loggedInUserId)
         {
             var userId = model.UserId;
 
@@ -144,7 +162,11 @@ namespace Service.Implementations
 
             await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchUsers");
 
-            return new ServiceResult<bool> { IsSuccess = true, Data = true, Message = "" };
+            return new ServiceResult<BasicResponseViewModel>
+            {
+                IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully update user roles." },
+                Message = ""
+            };
         }
     }
 }

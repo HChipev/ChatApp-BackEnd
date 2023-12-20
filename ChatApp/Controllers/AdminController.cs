@@ -27,7 +27,7 @@ namespace Back_End.Controllers
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 
-        [HttpDelete("user/delete/{userId}")]
+        [HttpDelete("user/delete/{userId:int}")]
         public async Task<IActionResult> DeleteUser(int userId)
         {
             var result = await _adminService.DeleteUserAsync(userId, GetUserId());
@@ -35,7 +35,7 @@ namespace Back_End.Controllers
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 
-        [HttpDelete("role/delete/{roleId}")]
+        [HttpDelete("role/delete/{roleId:int}")]
         public async Task<IActionResult> DeleteRole(int roleId)
         {
             var result = await _adminService.DeleteRoleAsync(roleId, GetUserId());

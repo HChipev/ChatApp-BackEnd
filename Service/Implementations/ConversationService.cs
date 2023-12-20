@@ -2,9 +2,11 @@ using AutoMapper;
 using Common.Classes;
 using Data.Entities;
 using Data.Repository;
+using Data.ViewModels.BasicResponseModels;
 using Data.ViewModels.Conversation.Models;
 using Data.ViewModels.RabbitMQ.Models;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.Extensions.Configuration;
 using Service.Hubs;
 using Service.Interfaces;
 
@@ -12,21 +14,23 @@ namespace Service.Implementations
 {
     public class ConversationService : IConversationService
     {
+        private readonly IConfiguration _configuration;
         private readonly IRepository<Conversation> _conversationRepository;
         private readonly IEventBus _eventBus;
         private readonly IHubContext<RefetchConversationsHub> _hubContext;
         private readonly IMapper _mapper;
 
         public ConversationService(IEventBus eventBus, IMapper mapper, IRepository<Conversation> conversationRepository,
-            IHubContext<RefetchConversationsHub> hubContext)
+            IHubContext<RefetchConversationsHub> hubContext, IConfiguration configuration)
         {
             _eventBus = eventBus;
             _mapper = mapper;
             _conversationRepository = conversationRepository;
             _hubContext = hubContext;
+            _configuration = configuration;
         }
 
-        public async Task<ServiceResult<ConversationSimpleViewModel>> GenerateAnswerAsync(
+        public async Task<ServiceResult<ConversationSimpleViewModel>> GenerateAnswerAsync(int userId,
             GenerateQuestionViewModel model)
         {
             try
@@ -50,8 +54,16 @@ namespace Service.Implementations
 
                 if (model.ConversationId is not null)
                 {
-                    conversationSimpleViewModel =
-                        await AddToExistingConversationAsync(_mapper.Map<GenerateAnswerQueue>(model), true);
+                    var result =
+                        await AddToExistingConversationAsync(userId, _mapper.Map<GenerateAnswerQueue>(model), true);
+
+                    if (!result.IsSuccess)
+                    {
+                        return new ServiceResult<ConversationSimpleViewModel>
+                            { IsSuccess = false, Data = null, Message = result.Message };
+                    }
+
+                    conversationSimpleViewModel = result.Data;
                 }
 
                 _eventBus.Publish(message);
@@ -70,7 +82,7 @@ namespace Service.Implementations
         {
             var userConversation =
                 _mapper.Map<List<ConversationSimpleViewModel>>(
-                    _conversationRepository.FindAllByCondition(x => x.UserId == userId));
+                    _conversationRepository.FindAllByCondition(x => x.UserId == userId && x.IsDeleted == false));
 
             userConversation = userConversation.OrderByDescending(x => x.ModifiedAtUtc).ToList();
             return new ServiceResult<UserConversationViewModel>
@@ -90,6 +102,15 @@ namespace Service.Implementations
                 {
                     IsSuccess = false, Data = null,
                     Message = "No conversation found!"
+                };
+            }
+
+            if (conversation.IsDeleted)
+            {
+                return new ServiceResult<ConversationsViewModel>
+                {
+                    IsSuccess = false, Data = null,
+                    Message = "Conversation is deleted!"
                 };
             }
 
@@ -131,26 +152,106 @@ namespace Service.Implementations
             return _mapper.Map<ConversationSimpleViewModel>(addedConversation);
         }
 
-        public async Task<ConversationSimpleViewModel> AddToExistingConversationAsync(GenerateAnswerQueue model,
+        public async Task<ServiceResult<BasicResponseViewModel>> DeleteConversationAsync(int userId, int conversationId)
+        {
+            var conversationForDeletion = _conversationRepository.Find(conversationId);
+
+            if (conversationForDeletion is null)
+            {
+                return new ServiceResult<BasicResponseViewModel>
+                    { Data = null, IsSuccess = false, Message = "No conversation found!" };
+            }
+
+            if (userId != conversationForDeletion.UserId)
+            {
+                return new ServiceResult<BasicResponseViewModel>
+                    { Data = null, IsSuccess = false, Message = "Unauthorized!" };
+            }
+
+            _conversationRepository.Delete(conversationId);
+
+            _conversationRepository.SaveChanges();
+
+            await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchConversations");
+
+            return new ServiceResult<BasicResponseViewModel>
+            {
+                Data = new BasicResponseViewModel { Message = "Successfully deleted conversation." }, IsSuccess = true,
+                Message = ""
+            };
+        }
+
+        public ServiceResult<ShareConversationViewModel> ShareConversation(int userId, int conversationId)
+        {
+            var conversationForSharing = _conversationRepository.Find(conversationId);
+
+            if (conversationForSharing is null)
+            {
+                return new ServiceResult<ShareConversationViewModel>
+                    { Data = null, IsSuccess = false, Message = "No conversation found!" };
+            }
+
+            if (conversationForSharing.IsShareable)
+            {
+                return new ServiceResult<ShareConversationViewModel>
+                {
+                    Data = new ShareConversationViewModel
+                        { Link = $"{_configuration["FrontEndURL"]}{conversationForSharing.Id}" },
+                    IsSuccess = true, Message = ""
+                };
+            }
+
+            if (userId != conversationForSharing.UserId)
+            {
+                return new ServiceResult<ShareConversationViewModel>
+                    { Data = null, IsSuccess = false, Message = "Unauthorized!" };
+            }
+
+            conversationForSharing.IsShareable = true;
+            _conversationRepository.Update(conversationForSharing);
+
+            _conversationRepository.SaveChanges();
+
+            return new ServiceResult<ShareConversationViewModel>
+            {
+                Data = new ShareConversationViewModel
+                    { Link = $"{_configuration["FrontEndURL"]}{conversationForSharing.Id}" },
+                IsSuccess = true, Message = ""
+            };
+        }
+
+        public async Task<ServiceResult<ConversationSimpleViewModel>> AddToExistingConversationAsync(int userId,
+            GenerateAnswerQueue model,
             bool isFromUser)
         {
             var conversation = _conversationRepository.Find(model.ConversationId.Value, x => x.Entries);
-            if (conversation is not null)
+
+            if (conversation is null)
             {
-                conversation.ChatHistory = model.ChatHistory;
-                conversation.Entries.Add(new ConversationEntry
-                {
-                    Text = isFromUser ? model.Question : model.Answer,
-                    IsFromUser = isFromUser,
-                    ConversationId = conversation.Id
-                });
+                return new ServiceResult<ConversationSimpleViewModel>
+                    { Data = null, IsSuccess = false, Message = "No conversation found!" };
             }
+
+            if (userId != conversation.UserId)
+            {
+                return new ServiceResult<ConversationSimpleViewModel>
+                    { Data = null, IsSuccess = false, Message = "Unauthorized!" };
+            }
+
+            conversation.ChatHistory = model.ChatHistory;
+            conversation.Entries.Add(new ConversationEntry
+            {
+                Text = isFromUser ? model.Question : model.Answer,
+                IsFromUser = isFromUser,
+                ConversationId = conversation.Id
+            });
 
             _conversationRepository.SaveChanges();
 
             await _hubContext.Clients.Group(model.UserId.ToString()).SendAsync("RefetchConversations");
 
-            return _mapper.Map<ConversationSimpleViewModel>(conversation);
+            return new ServiceResult<ConversationSimpleViewModel>
+                { Data = _mapper.Map<ConversationSimpleViewModel>(conversation), IsSuccess = true, Message = "" };
         }
     }
 }

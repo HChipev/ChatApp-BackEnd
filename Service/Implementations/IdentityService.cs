@@ -6,6 +6,7 @@ using AutoMapper;
 using Common.Classes;
 using Data.Entities;
 using Data.Repository;
+using Data.ViewModels.BasicResponseModels;
 using Data.ViewModels.Identity.Models;
 using Data.ViewModels.Token.Models;
 using Microsoft.AspNetCore.Hosting;
@@ -50,16 +51,21 @@ namespace Service.Implementations
             _environment = environment;
         }
 
-        public async Task<ServiceResult<bool>> LogoutAsync()
+        public async Task<ServiceResult<BasicResponseViewModel>> LogoutAsync()
         {
             try
             {
                 await _signInManager.SignOutAsync();
-                return new ServiceResult<bool> { IsSuccess = true, Message = "", Data = true };
+                return new ServiceResult<BasicResponseViewModel>
+                {
+                    IsSuccess = true, Message = "",
+                    Data = new BasicResponseViewModel { Message = "Successfully logged out." }
+                };
             }
             catch (Exception e)
             {
-                return new ServiceResult<bool> { IsSuccess = false, Message = e.Message, Data = false };
+                return new ServiceResult<BasicResponseViewModel>
+                    { IsSuccess = false, Message = e.Message, Data = null };
             }
         }
 

@@ -21,7 +21,7 @@ namespace Back_End.Controllers
         [HttpPost("ask")]
         public async Task<IActionResult> GenerateAnswer([FromBody] GenerateQuestionViewModel model)
         {
-            var result = await _conversationService.GenerateAnswerAsync(model);
+            var result = await _conversationService.GenerateAnswerAsync(GetUserId(), model);
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
 
@@ -41,6 +41,21 @@ namespace Back_End.Controllers
         public IActionResult GetConversation([FromRoute] int conversationId)
         {
             var result = _conversationService.GetConversation(GetUserId(), conversationId);
+            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
+        }
+
+        [HttpDelete("{conversationId:int}")]
+        public async Task<IActionResult> DeleteConversation([FromRoute] int conversationId)
+        {
+            var result = await _conversationService.DeleteConversationAsync(GetUserId(), conversationId);
+            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
+        }
+
+
+        [HttpPut("{conversationId:int}")]
+        public IActionResult ShareConversation([FromRoute] int conversationId)
+        {
+            var result = _conversationService.ShareConversation(GetUserId(), conversationId);
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
     }
