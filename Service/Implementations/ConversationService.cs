@@ -125,10 +125,12 @@ namespace Service.Implementations
 
             var conversationsList = _mapper.Map<List<ConversationViewModel>>(conversation.Entries);
 
+            var mappedConversation = _mapper.Map<ConversationsViewModel>(conversationsList);
+            mappedConversation.userId = conversation.UserId;
 
             return new ServiceResult<ConversationsViewModel>
             {
-                IsSuccess = true, Data = _mapper.Map<ConversationsViewModel>(conversationsList),
+                IsSuccess = true, Data = mappedConversation,
                 Message = ""
             };
         }
