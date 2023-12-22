@@ -1,4 +1,4 @@
-using Back_End.Extensions;
+using Infrastructure.Extensions;
 using Service.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);

@@ -1,7 +1,7 @@
 using Back_End.Controllers.Abstract;
-using Common.Classes;
+using Common.Enums;
 using Data.ViewModels.Document.Models;
-using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interfaces;
 
@@ -9,7 +9,7 @@ namespace Back_End.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = Roles.Admin)]
+    [HasPermission(Permission.ManageDocuments)]
     public class DocumentController : AbstractController
     {
         private readonly IDocumentService _documentService;

@@ -7,7 +7,6 @@ namespace Data.ModelBuilding
     public class ConversationConfigurator : IEntityTypeConfiguration<Conversation>
     {
         public void Configure(EntityTypeBuilder<Conversation> builder)
-
         {
             builder.ToTable("Conversations");
 

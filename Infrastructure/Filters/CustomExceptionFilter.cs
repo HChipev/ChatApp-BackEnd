@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Back_End.Filters
+namespace Infrastructure.Filters
 {
     public class CustomExceptionFilter : ExceptionFilterAttribute
     {

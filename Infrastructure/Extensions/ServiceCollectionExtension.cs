@@ -1,14 +1,21 @@
 using System.Reflection;
 using System.Text;
-using Back_End.Filters;
 using Data;
 using Data.Entities;
 using Data.Repository;
-using Data.ViewModels.Identity.Profiles;
+using Data.ViewModels.Admin.Profiles;
 using Data.ViewModels.RabbitMQ.Models;
+using Infrastructure.Filters;
+using Infrastructure.Handlers;
+using Infrastructure.Providers;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Service.Abstract;
@@ -17,7 +24,7 @@ using Service.EventHandlers.Interfaces;
 using Service.Implementations;
 using Service.Interfaces;
 
-namespace Back_End.Extensions
+namespace Infrastructure.Extensions
 {
     public static class ServiceCollectionExtension
     {
@@ -64,6 +71,10 @@ namespace Back_End.Extensions
             IWebHostEnvironment environment)
         {
             services.AddHttpClient();
+
+            services.AddSingleton<IAuthorizationHandler, PermissionAuthorizationHandler>();
+
+            services.AddSingleton<IAuthorizationPolicyProvider, PermissionAuthorizationPolicyProvider>();
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 

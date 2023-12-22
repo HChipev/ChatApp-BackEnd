@@ -14,6 +14,8 @@ namespace Data.Entities
 
         public ICollection<Conversation> Conversations { get; set; }
 
+        public ICollection<Role> Roles { get; set; }
+
         public DateTime CreatedAt { get; set; }
         public DateTime? ModifiedAt { get; set; }
     }

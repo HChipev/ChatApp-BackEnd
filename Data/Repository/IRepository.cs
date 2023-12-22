@@ -15,6 +15,8 @@ namespace Data.Repository
         public IEnumerable<T> DeleteByCondition(Expression<Func<T, bool>> predicate);
         public bool SaveChanges();
         public T? FindByCondition(Expression<Func<T, bool>> predicate);
-        public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate);
+
+        public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate,
+            params Expression<Func<T, object>>[] includes);
     }
 }

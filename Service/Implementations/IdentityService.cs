@@ -16,6 +16,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Service.Interfaces;
+using Role = Common.Enums.Role;
 
 namespace Service.Implementations
 {
@@ -25,7 +26,7 @@ namespace Service.Implementations
         private readonly IHostingEnvironment _environment;
         private readonly HttpClient _httpClient;
         private readonly IMapper _mapper;
-        private readonly IRepository<Role> _rolesRepository;
+        private readonly IRepository<Data.Entities.Role> _rolesRepository;
         private readonly SignInManager<User> _signInManager;
         private readonly ITokenService _tokenService;
         private readonly UserManager<User> _userManager;
@@ -36,7 +37,7 @@ namespace Service.Implementations
         public IdentityService(IRepository<User> userRepository, UserManager<User> userManager,
             SignInManager<User> signInManager,
             ITokenService tokenService, IConfiguration configuration, HttpClient httpClient, IMapper mapper,
-            IRepository<UserRole> userRolesRepository, IRepository<Role> rolesRepository,
+            IRepository<UserRole> userRolesRepository, IRepository<Data.Entities.Role> rolesRepository,
             IHostingEnvironment environment)
         {
             _userRepository = userRepository;
@@ -219,7 +220,7 @@ namespace Service.Implementations
                     };
                 }
 
-                await _userManager.AddToRoleAsync(user, Roles.User);
+                await _userManager.AddToRoleAsync(user, Role.User.ToString());
 
                 return new ServiceResult<UserLoginViewModel>
                 {

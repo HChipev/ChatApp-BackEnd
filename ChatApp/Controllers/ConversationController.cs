@@ -1,6 +1,7 @@
 using Back_End.Controllers.Abstract;
+using Common.Enums;
 using Data.ViewModels.Conversation.Models;
-using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Attributes;
 using Microsoft.AspNetCore.Mvc;
 using Service.Interfaces;
 
@@ -8,7 +9,7 @@ namespace Back_End.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    [HasPermission(Permission.NonSubscriber)]
     public class ConversationController : AbstractController
     {
         private readonly IConversationService _conversationService;
@@ -18,6 +19,7 @@ namespace Back_End.Controllers
             _conversationService = conversationService;
         }
 
+        [HasPermission(Permission.Subscriber)]
         [HttpPost("ask")]
         public async Task<IActionResult> GenerateAnswer([FromBody] GenerateQuestionViewModel model)
         {

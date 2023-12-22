@@ -30,9 +30,12 @@ namespace Data.Repository
             return _entities.FirstOrDefault(predicate);
         }
 
-        public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate)
+        public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate,
+            params Expression<Func<T, object>>[] includes)
         {
-            return _entities.Where(predicate).AsQueryable();
+            var query = _entities.Where(predicate).AsQueryable();
+
+            return includes.Aggregate(query, (current, include) => current.Include(include));
         }
 
         public T? Delete(int id)
