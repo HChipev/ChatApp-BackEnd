@@ -116,32 +116,38 @@ namespace Data.ModelBuilding
                 new()
                 {
                     RoleId = (int)Common.Enums.Role.Admin,
-                    PermissionId = (int)Permission.Subscriber
+                    PermissionId = (int)Permission.Subscriber,
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 },
                 new()
                 {
                     RoleId = (int)Common.Enums.Role.Admin,
-                    PermissionId = (int)Permission.NonSubscriber
+                    PermissionId = (int)Permission.NonSubscriber,
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 },
                 new()
                 {
                     RoleId = (int)Common.Enums.Role.Admin,
-                    PermissionId = (int)Permission.ManageIdentity
+                    PermissionId = (int)Permission.ManageIdentity,
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 },
                 new()
                 {
                     RoleId = (int)Common.Enums.Role.Admin,
-                    PermissionId = (int)Permission.ManageDocuments
+                    PermissionId = (int)Permission.ManageDocuments,
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 },
                 new()
                 {
                     RoleId = (int)Common.Enums.Role.User,
-                    PermissionId = (int)Permission.NonSubscriber
+                    PermissionId = (int)Permission.NonSubscriber,
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 },
                 new()
                 {
                     RoleId = (int)Common.Enums.Role.Subscriber,
-                    PermissionId = (int)Permission.Subscriber
+                    PermissionId = (int)Permission.Subscriber,
+                    CreatedAt = new DateTime(2023, 12, 3, 13, 47, 34, 839, DateTimeKind.Utc).AddTicks(9840)
                 }
             };
 

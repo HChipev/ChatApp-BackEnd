@@ -66,5 +66,21 @@ namespace Back_End.Controllers
 
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
+
+        [HttpGet("permission/all")]
+        public IActionResult GetPermissions()
+        {
+            var result = _adminService.GetPermissions();
+
+            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
+        }
+
+        [HttpPut("role/permission")]
+        public async Task<IActionResult> UpdateRolePermissions([FromBody] RolePermissionsViewModel model)
+        {
+            var result = await _adminService.UpdateRolePermissionsAsync(model, GetUserId());
+
+            return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
+        }
     }
 }

@@ -16,5 +16,10 @@ namespace Service.Interfaces
 
         public ServiceResult<UsersViewModel> GetUsers();
         public ServiceResult<RolesViewModel> GetRoles();
+
+        public ServiceResult<PermissionsViewModel> GetPermissions();
+
+        public Task<ServiceResult<BasicResponseViewModel>>
+            UpdateRolePermissionsAsync(RolePermissionsViewModel model, int loggedInUserId);
     }
 }
