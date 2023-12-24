@@ -15,21 +15,6 @@ namespace Data.Repository
             _entities = context.Set<T>();
         }
 
-        public T Add(T entity)
-        {
-            return _entities.Add(entity).Entity;
-        }
-
-        public bool SaveChanges()
-        {
-            return _context.SaveChanges() > 0;
-        }
-
-        public T? FindByCondition(Expression<Func<T, bool>> predicate)
-        {
-            return _entities.FirstOrDefault(predicate);
-        }
-
         public IQueryable<T> FindAllByCondition(Expression<Func<T, bool>> predicate,
             params Expression<Func<T, object>>[] includes)
         {
@@ -54,18 +39,6 @@ namespace Data.Repository
         public T Update(T entity)
         {
             return _entities.Update(entity).Entity;
-        }
-
-        public IEnumerable<T> DeleteByCondition(Expression<Func<T, bool>> predicate)
-        {
-            var entitiesToRemove = _entities.Where(predicate).ToList();
-
-            foreach (var entity in entitiesToRemove)
-            {
-                _entities.Remove(entity);
-            }
-
-            return entitiesToRemove;
         }
 
         public T? Find(int id, params Expression<Func<T, object>>[] includes)
@@ -93,6 +66,35 @@ namespace Data.Repository
         public IEnumerable<T> UpdateRange(IEnumerable<T> entities)
         {
             return entities.Select(entity => _entities.Update(entity).Entity).ToList();
+        }
+
+        public async Task<T> AddAsync(T entity)
+        {
+            var newEntity = await _entities.AddAsync(entity);
+
+            return newEntity.Entity;
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<T?> FindByConditionAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _entities.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task<IEnumerable<T>> DeleteByConditionAsync(Expression<Func<T, bool>> predicate)
+        {
+            var entitiesToRemove = await _entities.Where(predicate).ToListAsync();
+
+            foreach (var entity in entitiesToRemove)
+            {
+                _entities.Remove(entity);
+            }
+
+            return entitiesToRemove;
         }
     }
 }

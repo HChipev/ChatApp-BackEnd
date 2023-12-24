@@ -13,9 +13,9 @@ namespace Service.EventHandlers.Implementations
             _documentService = documentService;
         }
 
-        public void Handle(SaveDocumentsQueue @event)
+        public async Task Handle(SaveDocumentsQueue @event)
         {
-            _documentService.UpdateDocuments(@event);
+            await _documentService.UpdateDocumentsAsync(@event);
         }
     }
 }

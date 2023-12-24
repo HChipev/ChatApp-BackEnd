@@ -11,7 +11,7 @@ namespace Service.Interfaces
         public Task<ServiceResult<ConversationSimpleViewModel>> GenerateAnswerAsync(int userId,
             GenerateQuestionViewModel model);
 
-        public ConversationSimpleViewModel AddNewConversation(GenerateAnswerQueue model);
+        public Task<ConversationSimpleViewModel> AddNewConversation(GenerateAnswerQueue model);
 
         public Task<ServiceResult<ConversationSimpleViewModel>> AddToExistingConversationAsync(int userId,
             GenerateAnswerQueue model,
@@ -23,6 +23,6 @@ namespace Service.Interfaces
 
         public Task<ServiceResult<BasicResponseViewModel>> DeleteConversationAsync(int userId, int conversationId);
 
-        public ServiceResult<ShareConversationViewModel> ShareConversation(int userId, int conversationId);
+        public Task<ServiceResult<ShareConversationViewModel>> ShareConversationAsync(int userId, int conversationId);
     }
 }

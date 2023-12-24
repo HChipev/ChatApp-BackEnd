@@ -101,7 +101,7 @@ namespace Service.Implementations
 
                 if (existingRolePermission is null)
                 {
-                    _rolePermissionsRepository.Add(_mapper.Map<RolePermission>(entry));
+                    await _rolePermissionsRepository.AddAsync(_mapper.Map<RolePermission>(entry));
                 }
             }
 
@@ -113,13 +113,13 @@ namespace Service.Implementations
 
                 if (!viewModelPermissionExists)
                 {
-                    _rolePermissionsRepository.DeleteByCondition(x =>
+                    await _rolePermissionsRepository.DeleteByConditionAsync(x =>
                         x.RoleId == existingRolePermission.RoleId &&
                         x.PermissionId == existingRolePermission.PermissionId);
                 }
             }
 
-            _rolePermissionsRepository.SaveChanges();
+            await _rolePermissionsRepository.SaveChangesAsync();
 
             await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchRoles");
 
@@ -133,7 +133,7 @@ namespace Service.Implementations
 
         public async Task<ServiceResult<BasicResponseViewModel>> DeleteRoleAsync(int roleId, int loggedInUserId)
         {
-            var role = _roleRepository.FindByCondition(x => x.Id == roleId);
+            var role = await _roleRepository.FindByConditionAsync(x => x.Id == roleId);
 
             if (role is null)
             {
@@ -143,7 +143,7 @@ namespace Service.Implementations
 
             _roleRepository.Delete(role.Id);
 
-            _roleRepository.SaveChanges();
+            await _roleRepository.SaveChangesAsync();
 
             await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchRoles");
 
@@ -164,7 +164,7 @@ namespace Service.Implementations
                     { IsSuccess = false, Data = null, Message = "User doesn't exist!" };
             }
 
-            _userRepository.SaveChanges();
+            await _userRepository.SaveChangesAsync();
 
             await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchUsers");
 
@@ -178,7 +178,7 @@ namespace Service.Implementations
         public async Task<ServiceResult<BasicResponseViewModel>> AddRoleAsync(RoleSimpleViewModel model,
             int loggedInUserId)
         {
-            var existingRole = _roleRepository.FindByCondition(x => x.Name == model.Name);
+            var existingRole = await _roleRepository.FindByConditionAsync(x => x.Name == model.Name);
 
             if (existingRole is not null)
             {
@@ -199,8 +199,8 @@ namespace Service.Implementations
                 }
             }
 
-            _roleRepository.Add(newRole);
-            _roleRepository.SaveChanges();
+            await _roleRepository.AddAsync(newRole);
+            await _roleRepository.SaveChangesAsync();
 
             await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchRoles");
 
@@ -225,7 +225,7 @@ namespace Service.Implementations
 
                 if (existingUserRole is null)
                 {
-                    _userRoleRepository.Add(_mapper.Map<UserRole>(entry));
+                    await _userRoleRepository.AddAsync(_mapper.Map<UserRole>(entry));
                 }
             }
 
@@ -236,12 +236,12 @@ namespace Service.Implementations
 
                 if (!viewModelRoleExists)
                 {
-                    _userRoleRepository.DeleteByCondition(x =>
+                    await _userRoleRepository.DeleteByConditionAsync(x =>
                         x.UserId == existingUserRole.UserId && x.RoleId == existingUserRole.RoleId);
                 }
             }
 
-            _userRoleRepository.SaveChanges();
+            await _userRoleRepository.SaveChangesAsync();
 
             await _hubContext.Clients.Group(loggedInUserId.ToString()).SendAsync("RefetchUsers");
 

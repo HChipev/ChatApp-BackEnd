@@ -23,7 +23,7 @@ namespace Data
             SeedConfigurator.Seed(modelBuilder);
         }
 
-        public override int SaveChanges()
+        public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
             ChangeTracker.DetectChanges();
             var added = ChangeTracker.Entries()
@@ -57,7 +57,7 @@ namespace Data
                 track.ModifiedAt = DateTime.UtcNow;
             }
 
-            return base.SaveChanges();
+            return base.SaveChangesAsync(cancellationToken);
         }
     }
 }

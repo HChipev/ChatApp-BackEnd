@@ -21,7 +21,7 @@ namespace Service.Implementations
             _configuration = configuration;
         }
 
-        public TokenViewModel GenerateAccessToken(string email, int id, IEnumerable<string> roleNames,
+        public async Task<TokenViewModel> GenerateAccessTokenAsync(string email, int id, IEnumerable<string> roleNames,
             string picture, string name, bool isLogin = false)
         {
             int.TryParse(_configuration["JWT:TokenValidityInDays"], out var tokenValidityInDays);
@@ -54,7 +54,7 @@ namespace Service.Implementations
             }
 
             _repository.Update(dbUser);
-            _repository.SaveChanges();
+            await _repository.SaveChangesAsync();
 
             return new TokenViewModel
             {

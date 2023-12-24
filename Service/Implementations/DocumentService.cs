@@ -27,11 +27,11 @@ namespace Service.Implementations
             _hubContext = hubContext;
         }
 
-        public void UpdateDocuments(SaveDocumentsQueue models)
+        public async Task UpdateDocumentsAsync(SaveDocumentsQueue models)
         {
             _documentRepository.UpdateRange(_mapper.Map<List<Document>>(models.Documents));
 
-            _documentRepository.SaveChanges();
+            await _documentRepository.SaveChangesAsync();
         }
 
         public ServiceResult<DocumentsSimpleViewModel> GetDocuments()
@@ -61,7 +61,7 @@ namespace Service.Implementations
                 deletedDocument.IsDeleted = false;
 
                 var restoredDocument = _documentRepository.Update(deletedDocument);
-                _documentRepository.SaveChanges();
+                await _documentRepository.SaveChangesAsync();
 
                 _eventBus.Publish(_mapper.Map<LoadDocumentsQueue>(new List<Document> { restoredDocument }));
 
@@ -97,7 +97,7 @@ namespace Service.Implementations
                 document.VectorIds = new List<string>();
                 _documentRepository.Update(document);
 
-                _documentRepository.SaveChanges();
+                await _documentRepository.SaveChangesAsync();
 
                 await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchDocuments");
 
@@ -121,7 +121,7 @@ namespace Service.Implementations
             {
                 var documents = _documentRepository.AddRange(_mapper.Map<List<Document>>(models.Documents));
 
-                _documentRepository.SaveChanges();
+                await _documentRepository.SaveChangesAsync();
 
                 _eventBus.Publish(_mapper.Map<LoadDocumentsQueue>(documents.ToList()));
 
@@ -129,7 +129,7 @@ namespace Service.Implementations
 
                 return new ServiceResult<BasicResponseViewModel>
                 {
-                    IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully added role." },
+                    IsSuccess = true, Data = new BasicResponseViewModel { Message = "Successfully added document." },
                     Message = ""
                 };
             }

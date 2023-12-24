@@ -86,7 +86,7 @@ namespace Service.Implementations
             var content = await response.Content.ReadAsStringAsync();
             var userInfo = JsonConvert.DeserializeObject<GoogleUserInfoViewModel>(content);
 
-            var dbUser = _userRepository.FindByCondition(user => user.Email == userInfo.Email);
+            var dbUser = await _userRepository.FindByConditionAsync(user => user.Email == userInfo.Email);
             if (dbUser is not null)
             {
                 await _signInManager.SignInAsync(dbUser, true);
@@ -97,7 +97,7 @@ namespace Service.Implementations
                     IsSuccess = true, Message = "",
                     Data = new TokensResponseViewModel
                     {
-                        Tokens = _tokenService.GenerateAccessToken(dbUser.Email, dbUser.Id,
+                        Tokens = await _tokenService.GenerateAccessTokenAsync(dbUser.Email, dbUser.Id,
                             await GetUserRolesNames(dbUser.Id), dbUser.Picture, dbUser.Name, true)
                     }
                 };
@@ -144,7 +144,7 @@ namespace Service.Implementations
 
                 var nameIdentifier = int.Parse(principal.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-                var user = _userRepository.FindByCondition(u =>
+                var user = await _userRepository.FindByConditionAsync(u =>
                     u.Id == nameIdentifier);
 
                 if (user is null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
@@ -154,7 +154,7 @@ namespace Service.Implementations
                 }
 
                 var newTokens =
-                    _tokenService.GenerateAccessToken(user.Email, user.Id, await GetUserRolesNames(user.Id),
+                    await _tokenService.GenerateAccessTokenAsync(user.Email, user.Id, await GetUserRolesNames(user.Id),
                         user.Picture, user.Name);
                 return new ServiceResult<TokensResponseViewModel>
                     { IsSuccess = true, Message = "", Data = new TokensResponseViewModel { Tokens = newTokens } };
@@ -191,7 +191,7 @@ namespace Service.Implementations
                     IsSuccess = true, Message = "",
                     Data = new TokensResponseViewModel
                     {
-                        Tokens = _tokenService.GenerateAccessToken(dbUser.Email, dbUser.Id,
+                        Tokens = await _tokenService.GenerateAccessTokenAsync(dbUser.Email, dbUser.Id,
                             await GetUserRolesNames(dbUser.Id), dbUser.Picture, dbUser.Name, true)
                     }
                 };

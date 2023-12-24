@@ -55,9 +55,9 @@ namespace Back_End.Controllers
 
 
         [HttpPut("{conversationId:int}")]
-        public IActionResult ShareConversation([FromRoute] int conversationId)
+        public async Task<IActionResult> ShareConversation([FromRoute] int conversationId)
         {
-            var result = _conversationService.ShareConversation(GetUserId(), conversationId);
+            var result = await _conversationService.ShareConversationAsync(GetUserId(), conversationId);
             return result.IsSuccess ? Ok(result.Data) : BadRequest(result.Message);
         }
     }

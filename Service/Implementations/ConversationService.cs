@@ -48,7 +48,7 @@ namespace Service.Implementations
 
                 if (model.ConversationId is null)
                 {
-                    conversationSimpleViewModel = AddNewConversation(_mapper.Map<GenerateAnswerQueue>(model));
+                    conversationSimpleViewModel = await AddNewConversation(_mapper.Map<GenerateAnswerQueue>(model));
                     message.ConversationId = conversationSimpleViewModel.ConversationId;
                 }
 
@@ -135,7 +135,7 @@ namespace Service.Implementations
             };
         }
 
-        public ConversationSimpleViewModel AddNewConversation(GenerateAnswerQueue model)
+        public async Task<ConversationSimpleViewModel> AddNewConversation(GenerateAnswerQueue model)
         {
             var conversation = _mapper.Map<Conversation>(model);
             conversation.Entries = new List<ConversationEntry>
@@ -148,8 +148,8 @@ namespace Service.Implementations
                 }
             };
 
-            var addedConversation = _conversationRepository.Add(conversation);
-            _conversationRepository.SaveChanges();
+            var addedConversation = await _conversationRepository.AddAsync(conversation);
+            await _conversationRepository.SaveChangesAsync();
 
             return _mapper.Map<ConversationSimpleViewModel>(addedConversation);
         }
@@ -172,7 +172,7 @@ namespace Service.Implementations
 
             _conversationRepository.Delete(conversationId);
 
-            _conversationRepository.SaveChanges();
+            await _conversationRepository.SaveChangesAsync();
 
             await _hubContext.Clients.Group(userId.ToString()).SendAsync("RefetchConversations");
 
@@ -183,7 +183,8 @@ namespace Service.Implementations
             };
         }
 
-        public ServiceResult<ShareConversationViewModel> ShareConversation(int userId, int conversationId)
+        public async Task<ServiceResult<ShareConversationViewModel>> ShareConversationAsync(int userId,
+            int conversationId)
         {
             var conversationForSharing = _conversationRepository.Find(conversationId);
 
@@ -212,7 +213,7 @@ namespace Service.Implementations
             conversationForSharing.IsShareable = true;
             _conversationRepository.Update(conversationForSharing);
 
-            _conversationRepository.SaveChanges();
+            await _conversationRepository.SaveChangesAsync();
 
             return new ServiceResult<ShareConversationViewModel>
             {
@@ -248,7 +249,9 @@ namespace Service.Implementations
                 ConversationId = conversation.Id
             });
 
-            _conversationRepository.SaveChanges();
+            _conversationRepository.Update(conversation);
+
+            await _conversationRepository.SaveChangesAsync();
 
             await _hubContext.Clients.Group(model.UserId.ToString()).SendAsync("RefetchConversations");
 

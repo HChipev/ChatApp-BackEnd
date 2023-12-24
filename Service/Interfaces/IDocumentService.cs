@@ -9,7 +9,7 @@ namespace Service.Interfaces
     public interface IDocumentService : IService
     {
         public Task<ServiceResult<BasicResponseViewModel>> AddDocumentsAsync(DocumentsViewModel models, int userId);
-        public void UpdateDocuments(SaveDocumentsQueue models);
+        public Task UpdateDocumentsAsync(SaveDocumentsQueue models);
         public ServiceResult<DocumentsSimpleViewModel> GetDocuments();
         public Task<ServiceResult<BasicResponseViewModel>> RestoreDocumentAsync(int documentId, int userId);
         public Task<ServiceResult<BasicResponseViewModel>> DeleteDocumentAsync(int documentId, int userId);

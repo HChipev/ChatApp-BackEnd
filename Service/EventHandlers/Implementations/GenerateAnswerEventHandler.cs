@@ -13,9 +13,9 @@ namespace Service.EventHandlers.Implementations
             _conversationService = conversationService;
         }
 
-        public void Handle(GenerateAnswerQueue @event)
+        public async Task Handle(GenerateAnswerQueue @event)
         {
-            _conversationService.AddToExistingConversationAsync(@event.UserId, @event, false);
+            await _conversationService.AddToExistingConversationAsync(@event.UserId, @event, false);
         }
     }
 }
