@@ -28,7 +28,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors();
 
 app.UseHttpsRedirection();
 
@@ -39,6 +38,7 @@ app.MapHub<RefetchDocumentsHub>("/Hubs/refetch-documents");
 app.MapHub<RefetchConversationsHub>("/Hubs/refetch-conversations");
 app.MapHub<RefetchAdminDataHub>("/Hubs/refetch-admin-data");
 
+app.UseCors();
 
 app.MapControllers();
 
