@@ -199,7 +199,10 @@ namespace Service.Implementations
                 return new ServiceResult<ShareConversationViewModel>
                 {
                     Data = new ShareConversationViewModel
-                        { Link = $"{_configuration["FrontEndURL"]}{conversationForSharing.Id}" },
+                    {
+                        Link =
+                            $"{Environment.GetEnvironmentVariable("FRONT_END_URL") ?? _configuration["FrontEndURL"]}{conversationForSharing.Id}"
+                    },
                     IsSuccess = true, Message = ""
                 };
             }
@@ -218,7 +221,10 @@ namespace Service.Implementations
             return new ServiceResult<ShareConversationViewModel>
             {
                 Data = new ShareConversationViewModel
-                    { Link = $"{_configuration["FrontEndURL"]}{conversationForSharing.Id}" },
+                {
+                    Link =
+                        $"{Environment.GetEnvironmentVariable("FRONT_END_URL") ?? _configuration["FrontEndURL"]}{conversationForSharing.Id}"
+                },
                 IsSuccess = true, Message = ""
             };
         }
