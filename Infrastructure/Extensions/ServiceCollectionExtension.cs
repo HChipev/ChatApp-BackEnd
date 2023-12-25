@@ -117,12 +117,16 @@ namespace Infrastructure.Extensions
         {
             services.AddSingleton<IEventBus, RabbitMqEventBus>(sp =>
             {
-                var hostName = configuration["RabbitMQ:HostName"];
-                var userName = configuration["RabbitMQ:UserName"];
-                var password = configuration["RabbitMQ:Password"];
-                var virtualHost = configuration["RabbitMQ:VirtualHost"];
+                var hostName = Environment.GetEnvironmentVariable("RABBITMQ_HOST_NAME") ??
+                               configuration["RabbitMQ:HostName"];
+                var userName = Environment.GetEnvironmentVariable("RABBITMQ_USER_NAME") ??
+                               configuration["RabbitMQ:UserName"];
+                var password = Environment.GetEnvironmentVariable("RABBITMQ_PASSWORD") ??
+                               configuration["RabbitMQ:Password"];
+                var virtualHost = Environment.GetEnvironmentVariable("RABBITMQ_VIRTUAL_HOST") ??
+                                  configuration["RabbitMQ:VirtualHost"];
 
-                var connectionString = $"amqp://{userName}:{password}@{hostName}/{virtualHost}";
+                var connectionString = $"amqps://{userName}:{password}@{hostName}/{virtualHost}";
 
                 var rabbitMq = new RabbitMqEventBus(connectionString, sp.GetRequiredService<IServiceScopeFactory>());
                 rabbitMq.Subscribe<GenerateAnswerQueue, GenerateAnswerEventHandler>();
