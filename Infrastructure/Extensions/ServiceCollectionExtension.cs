@@ -86,7 +86,7 @@ namespace Infrastructure.Extensions
                 {
                     options.AddDefaultPolicy(builder =>
                     {
-                        builder.WithOrigins("http://localhost:5173")
+                        builder.WithOrigins("http://localhost:5173","https://bytebuddy.app")
                             .AllowAnyHeader()
                             .AllowAnyMethod()
                             .AllowCredentials()
